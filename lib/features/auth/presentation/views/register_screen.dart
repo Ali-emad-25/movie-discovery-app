@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,8 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool obscureConfirmPassword = true;
 
   // Colors
-  bool get isDark =>
-      Theme.of(context).brightness == Brightness.dark;
+  bool get isDark => Theme.of(context).brightness == Brightness.dark;
 
   Color get backgroundColor =>
       isDark ? AppColors.bgDarkColor : AppColors.bgLightColor;
@@ -84,47 +86,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
         keyboardType: hint == 'Email'
             ? TextInputType.emailAddress
             : TextInputType.text,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 13,
-        ),
+        style: TextStyle(color: textColor, fontSize: 13),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(
-            color: hintColor,
-            fontSize: 13,
-          ),
-          prefixIcon: Icon(
-            prefixIcon,
-            size: 18,
-            color: secondaryTextColor,
-          ),
+          hintStyle: TextStyle(color: hintColor, fontSize: 13),
+          prefixIcon: Icon(prefixIcon, size: 18, color: secondaryTextColor),
           prefixIconConstraints: const BoxConstraints(
             minWidth: 42,
             minHeight: 48,
           ),
           suffixIcon: isObscured
               ? IconButton(
-            onPressed: () {
-              setState(() {
-                if (isPassword) {
-                  obscurePassword = !obscurePassword;
-                } else {
-                  obscureConfirmPassword =
-                  !obscureConfirmPassword;
-                }
-              });
-            },
-            icon: Icon(
-              (isPassword
-                  ? obscurePassword
-                  : obscureConfirmPassword)
-                  ? Icons.visibility_outlined
-                  : Icons.visibility_off_outlined,
-              size: 17,
-              color: secondaryTextColor,
-            ),
-          )
+                  onPressed: () {
+                    setState(() {
+                      if (isPassword) {
+                        obscurePassword = !obscurePassword;
+                      } else {
+                        obscureConfirmPassword = !obscureConfirmPassword;
+                      }
+                    });
+                  },
+                  icon: Icon(
+                    (isPassword ? obscurePassword : obscureConfirmPassword)
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    size: 17,
+                    color: secondaryTextColor,
+                  ),
+                )
               : null,
           filled: true,
           fillColor: fieldColor,
@@ -172,8 +161,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double scale =
-    (MediaQuery.of(context).size.width / 375).clamp(1.0, 1.2);
+    final double scale = (MediaQuery.of(context).size.width / 375).clamp(
+      1.0,
+      1.2,
+    );
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -201,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: primaryColor.withOpacity(0.22),
+                              color: primaryColor.withValues(alpha: 0.22),
                               blurRadius: 30,
                               spreadRadius: 8,
                             ),
@@ -209,10 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(11),
-                          child: Image.asset(
-                            AppAssets.logo,
-                            fit: BoxFit.cover,
-                          ),
+                          child: Image.asset(AppAssets.logo, fit: BoxFit.cover),
                         ),
                       ),
                     ),
@@ -244,7 +232,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     SizedBox(height: 42 * scale),
 
-
                     Text(
                       'Create Account',
                       style: TextStyle(
@@ -267,7 +254,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     SizedBox(height: 22 * scale),
 
-                   //form
+                    //form
                     buildTextField(
                       hint: 'Full Name',
                       prefixIcon: Icons.person_outline,
@@ -275,7 +262,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
 
                     SizedBox(height: 13 * scale),
-
 
                     buildTextField(
                       hint: 'Email',
@@ -285,7 +271,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     SizedBox(height: 13 * scale),
 
-
                     buildTextField(
                       hint: 'Password',
                       prefixIcon: Icons.lock_outline,
@@ -294,7 +279,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
 
                     SizedBox(height: 13 * scale),
-
 
                     buildTextField(
                       hint: 'Confirm Password',
@@ -306,59 +290,103 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(height: 19 * scale),
 
                     // Sign Up
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48 * scale,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (nameController.text.trim().isEmpty ||
-                              emailController.text.trim().isEmpty ||
-                              passwordController.text.isEmpty ||
-                              confirmPasswordController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please fill in all fields'),
-                              ),
-                            );
-                            return;
-                          }
 
-                          if (passwordController.text !=
-                              confirmPasswordController.text) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Passwords do not match'),
-                              ),
-                            );
-                            return;
-                          }
-
+                    // Sign Up
+                    BlocConsumer<AuthCubit, AuthState>(
+                      listener: (context, state) {
+                        if (state is AuthSuccess) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text(
-                                'Account form validated successfully',
-                              ),
+                              content: Text('Account created successfully!'),
                             ),
                           );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.white,
-                          elevation: 8,
-                          shadowColor: primaryColor.withOpacity(0.4),
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
+
+                          // هنضيف الانتقال للشاشة الرئيسية بعد ما نتأكد
+                          // إن التسجيل شغال بنجاح.
+                        } else if (state is AuthFailure) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message)),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+
+                        return SizedBox(
+                          width: double.infinity,
+                          height: 48 * scale,
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    // Validate fields
+                                    if (nameController.text.trim().isEmpty ||
+                                        emailController.text.trim().isEmpty ||
+                                        passwordController.text.isEmpty ||
+                                        confirmPasswordController
+                                            .text
+                                            .isEmpty) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Please fill in all fields',
+                                              ),
+                                            ),
+                                          );
+                                      return;
+                                    }
+
+                                    // Validate password confirmation
+                                    if (passwordController.text !=
+                                        confirmPasswordController.text) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Passwords do not match',
+                                              ),
+                                            ),
+                                          );
+                                      return;
+                                    }
+
+                                    // Call AuthCubit
+                                    context.read<AuthCubit>().register(
+                                      name: nameController.text.trim(),
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text,
+                                    );
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                              elevation: 8,
+                              shadowColor: primaryColor.withValues(alpha: 0.4),
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    width: 21,
+                                    height: 21,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'Sign Up',
+                                    style: TextStyle(
+                                      fontSize: 13 * scale,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                           ),
-                        ),
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontSize: 13 * scale,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
 
                     SizedBox(height: 25 * scale),
@@ -367,15 +395,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: Divider(
-                            color: dividerColor,
-                            thickness: 1,
-                          ),
+                          child: Divider(color: dividerColor, thickness: 1),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10 * scale,
-                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10 * scale),
                           child: Text(
                             'or continue with',
                             style: TextStyle(
@@ -385,10 +408,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         Expanded(
-                          child: Divider(
-                            color: dividerColor,
-                            thickness: 1,
-                          ),
+                          child: Divider(color: dividerColor, thickness: 1),
                         ),
                       ],
                     ),
@@ -406,7 +426,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).brightness == Brightness.light
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? Colors.black
                                   : Colors.white,
                             ),
@@ -430,12 +452,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
             // Login
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                12,
-                10,
-                12,
-                24 * scale,
-              ),
+              padding: EdgeInsets.fromLTRB(12, 10, 12, 24 * scale),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -14,11 +14,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-
   bool obscurePassword = true;
 
-  bool get isDark =>
-      Theme.of(context).brightness == Brightness.dark;
+  bool get isDark => Theme.of(context).brightness == Brightness.dark;
 
   Color get backgroundColor =>
       isDark ? AppColors.bgDarkColor : AppColors.bgLightColor;
@@ -71,36 +69,26 @@ class _LoginScreenState extends State<LoginScreen> {
         keyboardType: hint == 'Email'
             ? TextInputType.emailAddress
             : TextInputType.text,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 18,
-        ),
+        style: TextStyle(color: textColor, fontSize: 18),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(
-            color: hintColor,
-            fontSize: 13,
-          ),
-          prefixIcon: Icon(
-            prefixIcon,
-            size: 22,
-            color: secondaryTextColor,
-          ),
+          hintStyle: TextStyle(color: hintColor, fontSize: 13),
+          prefixIcon: Icon(prefixIcon, size: 22, color: secondaryTextColor),
           suffixIcon: isPassword
               ? IconButton(
-            onPressed: () {
-              setState(() {
-                obscurePassword = !obscurePassword;
-              });
-            },
-            icon: Icon(
-              obscurePassword
-                  ? Icons.visibility_outlined
-                  : Icons.visibility_off_outlined,
-              size: 17,
-              color: secondaryTextColor,
-            ),
-          )
+                  onPressed: () {
+                    setState(() {
+                      obscurePassword = !obscurePassword;
+                    });
+                  },
+                  icon: Icon(
+                    obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    size: 17,
+                    color: secondaryTextColor,
+                  ),
+                )
               : null,
           filled: true,
           fillColor: fieldColor,
@@ -147,8 +135,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double scale =
-    (MediaQuery.of(context).size.width / 375).clamp(1.0, 1.2);
+    final double scale = (MediaQuery.of(context).size.width / 375).clamp(
+      1.0,
+      1.2,
+    );
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -176,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: primaryColor.withOpacity(0.22),
+                              color: primaryColor.withValues(alpha: 0.22),
                               blurRadius: 30,
                               spreadRadius: 8,
                             ),
@@ -293,7 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
                           elevation: 8,
-                          shadowColor: primaryColor.withOpacity(0.4),
+                          shadowColor: primaryColor.withValues(alpha: 0.4),
                           padding: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(28),
@@ -340,15 +330,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: Divider(
-                            color: dividerColor,
-                            thickness: 1,
-                          ),
+                          child: Divider(color: dividerColor, thickness: 1),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10 * scale,
-                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10 * scale),
                           child: Text(
                             'or continue with',
                             style: TextStyle(
@@ -358,10 +343,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         Expanded(
-                          child: Divider(
-                            color: dividerColor,
-                            thickness: 1,
-                          ),
+                          child: Divider(color: dividerColor, thickness: 1),
                         ),
                       ],
                     ),
@@ -378,7 +360,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).brightness == Brightness.light
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.light
                                   ? Colors.black
                                   : Colors.white,
                             ),
@@ -402,21 +386,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
             // Sign Up
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                12,
-                10,
-                12,
-                24 * scale,
-              ),
+              padding: EdgeInsets.fromLTRB(12, 10, 12, 24 * scale),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Don't have an account? ",
-                    style: TextStyle(
-                      color: secondaryTextColor,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   GestureDetector(
                     onTap: () {
