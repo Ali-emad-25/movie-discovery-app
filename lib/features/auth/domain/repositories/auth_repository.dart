@@ -1,3 +1,4 @@
+import 'package:movie_discovery_app/core/network/api_result.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 
 abstract class AuthRepository {
@@ -17,4 +18,8 @@ abstract class AuthRepository {
   Future<void> logout();
 
   Future<User?> getCurrentUser();
+
+  Future<ApiResult<void>> sendPasswordResetEmail({
+    required String email,
+  });
 }
