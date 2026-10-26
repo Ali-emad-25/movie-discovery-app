@@ -37,10 +37,25 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<User> login({
     required String email,
     required String password,
-  }) {
-    throw UnimplementedError();
-  }
+  }) async {
+    final credential = await remoteDataSource.login(
+      email: email,
+      password: password,
+    );
 
+    final user = credential.user;
+
+    if (user == null) {
+      throw Exception('Failed to login.');
+    }
+
+    return User(
+      id: user.uid,
+      email: user.email ?? email.trim(),
+      displayName: user.displayName ?? '',
+      isGuest: user.isAnonymous,
+    );
+  }
   @override
   Future<User> continueAsGuest() {
     throw UnimplementedError();
