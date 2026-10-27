@@ -5,7 +5,9 @@ import 'package:movie_discovery_app/features/auth/data/data_sources/auth_remote_
 import 'package:movie_discovery_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:movie_discovery_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/register_use_case.dart';
+import 'package:movie_discovery_app/features/auth/domain/use_cases/send_password_reset_email_use_case.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/forgot_password_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -23,13 +25,21 @@ Future<void> configureDependencies() async {
     () => AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
   );
 
-  // Use Case
+  // Use Cases
   getIt.registerLazySingleton<RegisterUseCase>(
     () => RegisterUseCase(getIt<AuthRepository>()),
   );
+  getIt.registerLazySingleton<SendPasswordResetEmailUseCase>(
+    () => SendPasswordResetEmailUseCase(getIt<AuthRepository>()),
+  );
 
-  // Cubit
+  // Cubits
   getIt.registerFactory<AuthCubit>(
     () => AuthCubit(registerUseCase: getIt<RegisterUseCase>()),
+  );
+  getIt.registerFactory<ForgotPasswordCubit>(
+    () => ForgotPasswordCubit(
+      sendPasswordResetEmailUseCase: getIt<SendPasswordResetEmailUseCase>(),
+    ),
   );
 }
