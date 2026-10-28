@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
+import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
+import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool get isDark => Theme.of(context).brightness == Brightness.dark;
 
   Color get backgroundColor =>
-      isDark ? AppColors.bgDarkColor : AppColors.bgLightColor;
+      isDark ? AppColors.bgDarkColor : AppColors.loginLightColor;
 
   Color get fieldColor =>
       isDark ? AppColors.fieldDarkColor : AppColors.fieldLightColor;
@@ -47,6 +53,33 @@ class _LoginScreenState extends State<LoginScreen> {
       isDark ? AppColors.logoBgDarkColor : AppColors.logoBgLightColor;
 
   Color get primaryColor => AppColors.primaryColor;
+  Color get linkColor => isDark ? AppColors.primaryTextDarkColor : primaryColor;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final settings = context.read<SettingsCubit>().state;
+      final locale = Locale(settings.settings.languageCode);
+      if (context.locale != locale) await context.setLocale(locale);
+      if (!mounted) return;
+      final error = settings.error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.tr())),
+        );
+      }
+    });
+  }
+
+  void _submit() {
+    FocusScope.of(context).unfocus();
+    context.read<AuthCubit>().login(
+      email: emailController.text,
+      password: passwordController.text,
+    );
+  }
 
   @override
   void dispose() {
@@ -66,10 +99,13 @@ class _LoginScreenState extends State<LoginScreen> {
       child: TextField(
         controller: controller,
         obscureText: isPassword && obscurePassword,
-        keyboardType: hint == 'Email'
-            ? TextInputType.emailAddress
-            : TextInputType.text,
-        style: TextStyle(color: textColor, fontSize: 18),
+        keyboardType: isPassword
+            ? TextInputType.visiblePassword
+            : TextInputType.emailAddress,
+        textInputAction: isPassword ? TextInputAction.done : TextInputAction.next,
+        onSubmitted: isPassword ? (_) => _submit() : null,
+        autocorrect: false,
+        style: TextStyle(color: textColor, fontSize: 14),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(color: hintColor, fontSize: 13),
@@ -106,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(28),
-            borderSide: BorderSide(color: primaryColor),
+            borderSide: BorderSide(color: linkColor),
           ),
         ),
       ),
@@ -133,8 +169,50 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _buildWelcome(double scale) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'auth.welcome'.tr(),
+          style: TextStyle(
+            color: textColor,
+            fontSize: 23 * scale,
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.4,
+          ),
+        ),
+        SizedBox(height: 5 * scale),
+        Text(
+          'auth.sign_in_subtitle'.tr(),
+          style: TextStyle(color: secondaryTextColor, fontSize: 12 * scale),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (ModalRoute.of(context)?.isCurrent != true) return;
+        if (state is AuthLoginSuccess) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.profileScreenRouteName,
+            (_) => false,
+          );
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message.tr())),
+          );
+        }
+      },
+      child: _buildPage(context),
+    );
+  }
+
+  Widget _buildPage(BuildContext context) {
     final double scale = (MediaQuery.of(context).size.width / 375).clamp(
       1.0,
       1.2,
@@ -156,6 +234,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    if (!isDark) ...[
+                      _buildWelcome(scale),
+                      SizedBox(height: 36 * scale),
+                    ],
                     // Logo
                     Center(
                       child: Container(
@@ -197,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             TextSpan(
                               text: 'Verse',
-                              style: TextStyle(color: primaryColor),
+                              style: TextStyle(color: linkColor),
                             ),
                           ],
                         ),
@@ -209,40 +291,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 42 * scale),
-
-                    Text(
-                      'Welcome Back',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 23 * scale,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.4,
-                      ),
-                    ),
-
-                    SizedBox(height: 5 * scale),
-
-                    Text(
-                      'Sign in to continue',
-                      style: TextStyle(
-                        color: secondaryTextColor,
-                        fontSize: 12 * scale,
-                      ),
-                    ),
-
-                    SizedBox(height: 22 * scale),
+                    SizedBox(height: (isDark ? 42 : 22) * scale),
+                    if (isDark) ...[
+                      _buildWelcome(scale),
+                      SizedBox(height: 22 * scale),
+                    ],
 
                     buildTextField(
-                      hint: 'Email',
-                      prefixIcon: Icons.mail_outline,
+                      hint: 'auth.email'.tr(),
+                      prefixIcon: Icons.alternate_email,
                       controller: emailController,
                     ),
 
                     SizedBox(height: 13 * scale),
 
                     buildTextField(
-                      hint: 'Password',
+                      hint: 'auth.password'.tr(),
                       prefixIcon: Icons.lock_outline,
                       controller: passwordController,
                       isPassword: true,
@@ -251,7 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 7 * scale),
 
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(
                         onPressed: () {
                           Navigator.pushNamed(
@@ -268,9 +332,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'Forgot password?',
+                          'auth.forgot_password'.tr(),
                           style: TextStyle(
-                            color: primaryColor,
+                            color: linkColor,
                             fontSize: 11 * scale,
                           ),
                         ),
@@ -282,24 +346,35 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 48 * scale,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.white,
-                          elevation: 8,
-                          shadowColor: primaryColor.withValues(alpha: 0.4),
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
+                      child: BlocBuilder<AuthCubit, AuthState>(
+                        builder: (context, state) => ElevatedButton(
+                          onPressed: state is AuthLoading ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            elevation: 8,
+                            shadowColor: primaryColor.withValues(alpha: 0.4),
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 13 * scale,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          child: state is AuthLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  'auth.login'.tr(),
+                                  style: TextStyle(
+                                    fontSize: 13 * scale,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
@@ -309,22 +384,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 48 * scale,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: fieldColor,
-                          foregroundColor: textColor,
-                          padding: EdgeInsets.zero,
-                          side: BorderSide(color: borderColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
+                      child: BlocBuilder<AuthCubit, AuthState>(
+                        builder: (context, state) => OutlinedButton(
+                          onPressed: state is AuthLoading
+                              ? null
+                              : context.read<AuthCubit>().continueAsGuest,
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: fieldColor,
+                            foregroundColor: secondaryTextColor,
+                            padding: EdgeInsets.zero,
+                            side: BorderSide(color: borderColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          'Continue as guest',
-                          style: TextStyle(
-                            fontSize: 12 * scale,
-                            fontWeight: FontWeight.w500,
+                          child: Text(
+                            'auth.guest'.tr(),
+                            style: TextStyle(
+                              fontSize: 12 * scale,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
@@ -340,7 +419,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10 * scale),
                           child: Text(
-                            'or continue with',
+                            'auth.or_continue'.tr(),
                             style: TextStyle(
                               color: mutedTextColor,
                               fontSize: 11 * scale,
@@ -359,7 +438,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         buildSocialButton(
-                          onPressed: () {},
+                          onPressed: () => showComingSoon(context),
                           icon: Text(
                             'G',
                             style: TextStyle(
@@ -375,7 +454,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(width: 14 * scale),
                         buildSocialButton(
-                          onPressed: () {},
+                          onPressed: () => showComingSoon(context),
                           icon: Icon(
                             Icons.apple,
                             size: 22 * scale,
@@ -392,11 +471,12 @@ class _LoginScreenState extends State<LoginScreen> {
             // Sign Up
             Padding(
               padding: EdgeInsets.fromLTRB(12, 10, 12, 24 * scale),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    '${'auth.no_account'.tr()} ',
                     style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
                   GestureDetector(
@@ -407,9 +487,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                     child: Text(
-                      'Sign Up',
+                      'auth.sign_up'.tr(),
                       style: TextStyle(
-                        color: primaryColor,
+                        color: linkColor,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),

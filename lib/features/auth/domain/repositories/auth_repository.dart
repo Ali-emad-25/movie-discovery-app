@@ -8,16 +8,16 @@ abstract class AuthRepository {
     required String password,
   });
 
-  Future<User> login({
+  Future<ApiResult<User>> login({
     required String email,
     required String password,
   });
 
-  Future<User> continueAsGuest();
+  Future<ApiResult<User>> continueAsGuest();
 
-  Future<void> logout();
+  Future<ApiResult<void>> logout();
 
-  Future<User?> getCurrentUser();
+  Future<ApiResult<User?>> getCurrentUser();
 
   Future<ApiResult<void>> sendPasswordResetEmail({
     required String email,

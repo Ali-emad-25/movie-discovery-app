@@ -5,10 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_theme.dart';
+import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/login_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
+import 'package:movie_discovery_app/features/profile/presentation/views/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:movie_discovery_app/firebase_options.dart';
 
@@ -20,11 +22,16 @@ void main() async {
 
   await EasyLocalization.ensureInitialized();
 
+  final settingsCubit = getIt<SettingsCubit>();
+  await settingsCubit.loadSettings();
+
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
+      startLocale: Locale(settingsCubit.state.settings.languageCode),
+      saveLocale: false,
       child: MyApp(),
     ),
   );
@@ -41,21 +48,32 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MultiBlocProvider(
-          providers: [BlocProvider(create: (_) => getIt<AuthCubit>())],
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: ThemeMode.light,
-            initialRoute: AppRoutes.loginScreenRouteName,
-            routes: {
-              AppRoutes.loginScreenRouteName: (context) => const LoginScreen(),
-              AppRoutes.registerScreenRouteName: (context) => const RegisterScreen(),
-              AppRoutes.forgotPasswordScreenRouteName: (context) => const ForgotPasswordScreen(),
+          providers: [
+            BlocProvider(create: (_) => getIt<AuthCubit>()),
+            BlocProvider.value(value: getIt<SettingsCubit>()),
+          ],
+          child: BlocConsumer<SettingsCubit, SettingsState>(
+            buildWhen: (previous, current) => previous.settings != current.settings,
+            listener: (context, state) {
+              final locale = Locale(state.settings.languageCode);
+              if (context.locale != locale) context.setLocale(locale);
             },
+            builder: (context, state) => MaterialApp(
+              debugShowCheckedModeBanner: false,
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: state.settings.isDark ? ThemeMode.dark : ThemeMode.light,
+              initialRoute: AppRoutes.loginScreenRouteName,
+              routes: {
+                AppRoutes.loginScreenRouteName: (context) => const LoginScreen(),
+                AppRoutes.registerScreenRouteName: (context) => const RegisterScreen(),
+                AppRoutes.forgotPasswordScreenRouteName: (context) => const ForgotPasswordScreen(),
+                AppRoutes.profileScreenRouteName: (context) => const ProfileScreen(),
+              },
+            ),
           ),
         );
       },
