@@ -1,24 +1,37 @@
+
 import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../errors/failures.dart';
 import '../network/api_result.dart';
-
 import 'settings_use_cases.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
-  static const storageKey = 'app_settings';
   const SettingsRepositoryImpl();
+
+  String get storageKey {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? 'default';
+    return 'app_settings_$userId';
+  }
 
   @override
   Future<ApiResult<AppSettings>> loadSettings() async {
     try {
       final preferences = await SharedPreferences.getInstance();
       final stored = preferences.getString(storageKey);
-      if (stored == null) return const ApiSuccess(AppSettings());
+
+      if (stored == null) {
+        return const ApiSuccess(AppSettings());
+      }
+
       final data = jsonDecode(stored);
+
       if (data is! Map<String, dynamic>) {
         return const ApiSuccess(AppSettings());
       }
+
       return ApiSuccess(
         AppSettings(
           isDark: data['dark'] == true,
@@ -36,6 +49,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<ApiResult<void>> saveSettings(AppSettings settings) async {
     try {
       final preferences = await SharedPreferences.getInstance();
+
       final saved = await preferences.setString(
         storageKey,
         jsonEncode({
@@ -43,7 +57,11 @@ class SettingsRepositoryImpl implements SettingsRepository {
           'language': settings.languageCode,
         }),
       );
-      if (!saved) return const ApiError(UnknownFailure());
+
+      if (!saved) {
+        return const ApiError(UnknownFailure());
+      }
+
       return const ApiSuccess(null);
     } catch (_) {
       return const ApiError(UnknownFailure());

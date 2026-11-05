@@ -23,6 +23,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
+  Future<void> setGuestDefaults() async {
+    await _save(
+      const AppSettings(
+        isDark: false,
+        languageCode: 'en',
+      ),
+    );
+  }
+
   Future<void> setDarkMode(bool value) =>
       _save(state.settings.copyWith(isDark: value));
 
