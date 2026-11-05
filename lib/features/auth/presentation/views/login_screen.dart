@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_header.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/second_btn.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/main_btn.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/text_btn.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
@@ -60,6 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
   Widget buildTextField({
     required String hint,
     required IconData prefixIcon,
@@ -147,143 +155,52 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  28 * scale,
-                  48 * scale,
-                  28 * scale,
-                  16,
-                ),
+                padding: EdgeInsets.fromLTRB(28.w, 48.h, 28.w, 16.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Logo
-                    Center(
-                      child: Container(
-                        width: 64 * scale,
-                        height: 64 * scale,
-                        decoration: BoxDecoration(
-                          color: logoBgColor,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: primaryColor.withValues(alpha: 0.22),
-                              blurRadius: 30,
-                              spreadRadius: 8,
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(0.8),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(11),
-                            child: Image.asset(
-                              AppAssets.logo,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    const Center(child: AuthHeader()),
 
-                    SizedBox(height: 10 * scale),
+                    SizedBox(height: 42.h),
 
-                    Center(
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Movie',
-                              style: TextStyle(color: textColor),
-                            ),
-                            TextSpan(
-                              text: 'Verse',
-                              style: TextStyle(color: primaryColor),
-                            ),
-                          ],
-                        ),
-                        style: TextStyle(
-                          fontSize: 19 * scale,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.4,
-                        ),
-                      ),
-                    ),
+                    Text('Welcome Back', style: theme.textTheme.bodyLarge),
 
-                    SizedBox(height: 42 * scale),
-
-                    Text(
-                      'Welcome Back',
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 23 * scale,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.4,
-                      ),
-                    ),
-
-                    SizedBox(height: 5 * scale),
+                    SizedBox(height: 2.h),
 
                     Text(
                       'Sign in to continue',
-                      style: TextStyle(
-                        color: secondaryTextColor,
-                        fontSize: 12 * scale,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
 
-                    SizedBox(height: 22 * scale),
+                    SizedBox(height: 20.h),
 
-                    buildTextField(
+                    AuthTextField(
                       hint: 'Email',
                       prefixIcon: Icons.mail_outline,
                       controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
                     ),
 
-                    SizedBox(height: 13 * scale),
+                    SizedBox(height: 13.h),
 
-                    buildTextField(
+                    AuthTextField(
                       hint: 'Password',
                       prefixIcon: Icons.lock_outline,
                       controller: passwordController,
                       isPassword: true,
                     ),
 
-                    SizedBox(height: 7 * scale),
+                    SizedBox(height: 15.h),
 
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.forgotPasswordScreenRouteName,
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2,
-                            vertical: 7,
-                          ),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(
-                          'Forgot password?',
-                          style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 11 * scale,
-                          ),
-                        ),
-                      ),
-                    ),
+                    TextBtn(text: 'Forgot password?', onTap: () {}),
 
-                    SizedBox(height: 19 * scale),
+                    SizedBox(height: 35.h),
 
 
                     BlocConsumer<AuthCubit, AuthState>(
@@ -369,31 +286,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     SizedBox(height: 12 * scale),
 
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48 * scale,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: fieldColor,
-                          foregroundColor: textColor,
-                          padding: EdgeInsets.zero,
-                          side: BorderSide(color: borderColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                        ),
-                        child: Text(
-                          'Continue as guest',
-                          style: TextStyle(
-                            fontSize: 12 * scale,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                    SecondBtn(
+                      text: 'Continue as guest',
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.homeScreenRouteName,
+                        );
+                      },
                     ),
 
-                    SizedBox(height: 25 * scale),
+                    SizedBox(height: 25.h),
 
                     Row(
                       children: [
@@ -404,10 +307,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 10 * scale),
                           child: Text(
                             'or continue with',
-                            style: TextStyle(
-                              color: mutedTextColor,
-                              fontSize: 11 * scale,
-                            ),
+                            style: theme.textTheme.bodySmall,
                           ),
                         ),
                         Expanded(
@@ -416,7 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
 
-                    SizedBox(height: 19 * scale),
+                    SizedBox(height: 19.h),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -452,31 +352,24 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
 
-            // Sign Up
             Padding(
               padding: EdgeInsets.fromLTRB(12, 10, 12, 24 * scale),
               child: Row(
+                spacing: 5,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Don't have an account? ",
                     style: TextStyle(color: secondaryTextColor, fontSize: 12),
                   ),
-                  GestureDetector(
+                  TextBtn(
+                    text: 'SignUp',
                     onTap: () {
                       Navigator.pushNamed(
                         context,
                         AppRoutes.registerScreenRouteName,
                       );
                     },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                   ),
                 ],
               ),

@@ -2,6 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+import 'package:movie_discovery_app/core/routes/app_routes.dart';
+import 'package:movie_discovery_app/core/theme/app_theme.dart';
+import 'package:movie_discovery_app/core/theme/theme_cubit.dart';
+import 'package:movie_discovery_app/core/theme/theme_state.dart';
+import 'package:movie_discovery_app/features/auth/presentation/views/login_screen.dart';
+import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
+import 'package:movie_discovery_app/features/home/presentation/views/home_screen.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_theme.dart';
@@ -22,10 +31,10 @@ void main() async {
 
   runApp(
     EasyLocalization(
-      supportedLocales: [Locale('en'), Locale('ar')],
+      supportedLocales: const [Locale('en'), Locale('ar')],
       path: 'assets/translations',
-      fallbackLocale: Locale('en'),
-      child: MyApp(),
+      fallbackLocale: const Locale('en'),
+      child: const MyApp(),
     ),
   );
 }

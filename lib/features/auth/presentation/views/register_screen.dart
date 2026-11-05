@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_header.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/second_btn.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/main_btn.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/text_btn.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
@@ -64,6 +70,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
   // Text Field
   Widget buildTextField({
     required String hint,
@@ -167,18 +176,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  28 * scale,
-                  48 * scale,
-                  28 * scale,
-                  16,
-                ),
+                padding: EdgeInsets.fromLTRB(28.w, 48.h, 28.w, 16.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -205,7 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 10 * scale),
+                    SizedBox(height: 42.h),
 
                     // MovieVerse
                     Center(
@@ -242,17 +246,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 5 * scale),
+                    SizedBox(height: 2.h),
 
                     Text(
                       'Join to start your journey',
-                      style: TextStyle(
-                        color: secondaryTextColor,
-                        fontSize: 12 * scale,
-                      ),
+                      style: theme.textTheme.bodySmall,
                     ),
 
-                    SizedBox(height: 22 * scale),
+                    SizedBox(height: 20.h),
 
                     //form
                     buildTextField(
@@ -261,12 +262,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: nameController,
                     ),
 
-                    SizedBox(height: 13 * scale),
+                    SizedBox(height: 13.h),
 
                     buildTextField(
                       hint: 'Email',
                       prefixIcon: Icons.mail_outline,
                       controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
                     ),
 
                     SizedBox(height: 13 * scale),
@@ -278,16 +280,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       isPassword: true,
                     ),
 
-                    SizedBox(height: 13 * scale),
+                    SizedBox(height: 13.h),
 
                     buildTextField(
                       hint: 'Confirm Password',
                       prefixIcon: Icons.lock_outline,
                       controller: confirmPasswordController,
-                      isConfirmPassword: true,
+                      isPassword: true,
                     ),
 
-                    SizedBox(height: 19 * scale),
+                    SizedBox(height: 19.h),
 
                     // Sign Up
 
@@ -401,10 +403,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 10 * scale),
                           child: Text(
                             'or continue with',
-                            style: TextStyle(
-                              color: mutedTextColor,
-                              fontSize: 11 * scale,
-                            ),
+                            style: theme.textTheme.bodySmall,
                           ),
                         ),
                         Expanded(
@@ -413,7 +412,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
 
-                    SizedBox(height: 19 * scale),
+                    SizedBox(height: 19.h),
 
                     // Google and Apple
                     Row(
@@ -450,34 +449,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
 
-            // Login
             Padding(
               padding: EdgeInsets.fromLTRB(12, 10, 12, 24 * scale),
               child: Row(
+                spacing: 5,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Already have an account? ',
-                    style: TextStyle(
-                      color: secondaryTextColor,
-                      fontSize: 11 * scale,
-                    ),
+                    style: theme.textTheme.bodySmall,
                   ),
-                  GestureDetector(
+                  TextBtn(
+                    text: 'Login',
                     onTap: () {
-                      Navigator.pushReplacementNamed(
+                      Navigator.pushNamed(
                         context,
                         AppRoutes.loginScreenRouteName,
                       );
                     },
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 11 * scale,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                   ),
                 ],
               ),
