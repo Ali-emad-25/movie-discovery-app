@@ -1,10 +1,17 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:movie_discovery_app/core/di/injection.dart';
-import 'package:movie_discovery_app/core/utils/app_assets.dart';
-import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/core/widgets/app_toast.dart';
+
 import 'package:movie_discovery_app/features/auth/presentation/view_models/forgot_password_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/forgot_password_state.dart';
+
+import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_header.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/main_btn.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
@@ -26,63 +33,37 @@ class _ForgotPasswordView extends StatefulWidget {
 }
 
 class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-
-  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
-
-  Color get _backgroundColor =>
-      _isDark ? AppColors.bgDarkColor : AppColors.bgLightColor;
-
-  Color get _fieldColor =>
-      _isDark ? AppColors.fieldDarkBlueColor : AppColors.fieldWhiteColor;
-
-  Color get _borderColor =>
-      _isDark ? AppColors.borderDarkColor : AppColors.borderLightColor;
-
-  Color get _textColor =>
-      _isDark ? AppColors.textDarkColor : AppColors.textLightColor;
-
-  Color get _secondaryTextColor =>
-      _isDark ? AppColors.secondaryTextDarkColor : AppColors.secondaryTextLightColor;
-
-  Color get _hintColor =>
-      _isDark ? AppColors.hintDarkColor : AppColors.hintLightColor;
-
-  Color get _logoBgColor =>
-      _isDark ? AppColors.logoBgDarkColor : AppColors.logoBgLightColor;
-
-  Color get _primaryColor => AppColors.primaryColor;
+  final formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    emailController.dispose();
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      FocusScope.of(context).unfocus();
-      context.read<ForgotPasswordCubit>().sendPasswordResetEmail(
-            email: _emailController.text,
-          );
-    }
+  void submit() {
+    if (!(formKey.currentState?.validate() ?? false)) return;
+
+    FocusScope.of(context).unfocus();
+
+    context.read<ForgotPasswordCubit>().sendPasswordResetEmail(
+      email: emailController.text.trim(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final double scale = (MediaQuery.of(context).size.width / 375).clamp(
-      1.0,
-      1.2,
-    );
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: _backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: _textColor, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -90,227 +71,88 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
         child: BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
           listener: (context, state) {
             if (state is ForgotPasswordFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.redAccent,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              );
+              AppToast.error(context, message: state.message.tr());
             }
           },
           builder: (context, state) {
             if (state is ForgotPasswordSuccess) {
-              return _buildSuccessView(context, state.email, scale);
+              return buildSuccessView(context, state.email);
             }
 
-            final bool isLoading = state is ForgotPasswordLoading;
+            final isLoading = state is ForgotPasswordLoading;
 
             return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 28 * scale, vertical: 16),
+              padding: EdgeInsets.fromLTRB(28.w, 16.h, 28.w, 24.h),
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: 12 * scale),
+                    SizedBox(height: 12.h),
 
-                    // Glowing Branding Header
-                    Center(
-                      child: Container(
-                        width: 72 * scale,
-                        height: 72 * scale,
-                        decoration: BoxDecoration(
-                          color: _logoBgColor,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: _primaryColor.withValues(alpha: 0.25),
-                              blurRadius: 32,
-                              spreadRadius: 8,
-                            ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: Image.asset(
-                              AppAssets.logo,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, _, _) => Icon(
-                                Icons.lock_reset_rounded,
-                                size: 36,
-                                color: _primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    const Center(child: AuthHeader()),
 
-                    SizedBox(height: 14 * scale),
-
-                    Center(
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Movie',
-                              style: TextStyle(color: _textColor),
-                            ),
-                            TextSpan(
-                              text: 'Verse',
-                              style: TextStyle(color: _primaryColor),
-                            ),
-                          ],
-                        ),
-                        style: TextStyle(
-                          fontSize: 20 * scale,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.4,
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 36 * scale),
+                    SizedBox(height: 40.h),
 
                     Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: _textColor,
-                        fontSize: 24 * scale,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.4,
-                      ),
+                      'auth.forgot_password_title'.tr(),
+                      style: theme.textTheme.titleLarge,
                     ),
 
-                    SizedBox(height: 8 * scale),
+                    SizedBox(height: 8.h),
 
                     Text(
-                      'Enter your email address and we will send you a link to reset your password.',
-                      style: TextStyle(
-                        color: _secondaryTextColor,
-                        fontSize: 13 * scale,
-                        height: 1.45,
-                      ),
+                      'auth.forgot_password_description'.tr(),
+                      style: theme.textTheme.bodySmall,
                     ),
 
-                    SizedBox(height: 28 * scale),
+                    SizedBox(height: 28.h),
 
-                    // Email Field
-                    TextFormField(
-                      controller: _emailController,
+                    AuthTextField(
+                      hint: 'auth.email'.tr(),
+                      prefixIcon: Icons.mail_outline,
+                      controller: emailController,
                       keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _submit(),
-                      style: TextStyle(color: _textColor, fontSize: 15),
                       validator: (value) {
-                        final trimmed = value?.trim() ?? '';
-                        if (trimmed.isEmpty) {
-                          return 'Please enter your email';
+                        if (value == null || value.trim().isEmpty) {
+                          return 'auth.email_required'.tr();
                         }
-                        final emailRegex = RegExp(
-                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                        );
-                        if (!emailRegex.hasMatch(trimmed)) {
-                          return 'Please enter a valid email address';
+
+                        if (!RegExp(
+                          r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+                        ).hasMatch(value.trim())) {
+                          return 'auth.invalid_email'.tr();
                         }
+
                         return null;
                       },
-                      decoration: InputDecoration(
-                        hintText: 'Enter your email',
-                        hintStyle: TextStyle(color: _hintColor, fontSize: 14),
-                        prefixIcon: Icon(
-                          Icons.mail_outline_rounded,
-                          size: 22,
-                          color: _secondaryTextColor,
-                        ),
-                        filled: true,
-                        fillColor: _fieldColor,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 16,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28),
-                          borderSide: BorderSide(color: _borderColor),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28),
-                          borderSide: BorderSide(color: _borderColor),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28),
-                          borderSide: BorderSide(color: _primaryColor, width: 1.5),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28),
-                          borderSide: const BorderSide(color: Colors.redAccent),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(28),
-                          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-                        ),
-                      ),
                     ),
 
-                    SizedBox(height: 24 * scale),
+                    SizedBox(height: 15.h),
 
-                    // Submit Button
                     SizedBox(
-                      width: double.infinity,
-                      height: 50 * scale,
+                      height: 48.h,
                       child: ElevatedButton(
-                        onPressed: isLoading ? null : _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: _primaryColor.withValues(alpha: 0.6),
-                          elevation: 6,
-                          shadowColor: _primaryColor.withValues(alpha: 0.4),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
-                        ),
+                        onPressed: isLoading ? null : submit,
                         child: isLoading
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
+                            ? SizedBox(
+                                width: 22.w,
+                                height: 22.h,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2.2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  color: colors.onPrimary,
                                 ),
                               )
-                            : Text(
-                                'Send Reset Link',
-                                style: TextStyle(
-                                  fontSize: 14 * scale,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                            : Text('auth.send_reset_link'.tr()),
                       ),
                     ),
 
-                    SizedBox(height: 24 * scale),
+                    SizedBox(height: 24.h),
 
-                    // Back to login button
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: Icon(Icons.arrow_back_rounded, size: 16, color: _secondaryTextColor),
-                        label: Text(
-                          'Back to Login',
-                          style: TextStyle(
-                            color: _secondaryTextColor,
-                            fontSize: 13 * scale,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                    TextButton.icon(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                      label: Text('auth.back_to_login'.tr()),
                     ),
                   ],
                 ),
@@ -322,101 +164,92 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
     );
   }
 
-  Widget _buildSuccessView(BuildContext context, String email, double scale) {
+  Widget buildSuccessView(BuildContext context, String email) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Center(
       child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 28 * scale, vertical: 24),
+        padding: EdgeInsets.symmetric(horizontal: 28.w, vertical: 24.h),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80 * scale,
-              height: 80 * scale,
+              width: 80.w,
+              height: 80.h,
               decoration: BoxDecoration(
-                color: _primaryColor.withValues(alpha: 0.15),
+                color: colors.primary.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
-                border: Border.all(color: _primaryColor.withValues(alpha: 0.3), width: 1.5),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
               ),
               child: Icon(
                 Icons.mark_email_read_outlined,
-                size: 42 * scale,
-                color: _primaryColor,
+                size: 42.sp,
+                color: colors.primary,
               ),
             ),
-            SizedBox(height: 24 * scale),
+
+            SizedBox(height: 24.h),
+
             Text(
-              'Reset Link Sent!',
+              'auth.reset_link_sent'.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: _textColor,
-                fontSize: 23 * scale,
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.titleLarge,
             ),
-            SizedBox(height: 10 * scale),
+
+            SizedBox(height: 10.h),
+
             Text(
-              'We have sent a password reset link to:',
+              'auth.reset_link_sent_description'.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: _secondaryTextColor,
-                fontSize: 13 * scale,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurfaceVariant,
               ),
             ),
-            SizedBox(height: 4 * scale),
+
+            SizedBox(height: 8.h),
+
             Text(
               email,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: _primaryColor,
-                fontSize: 14 * scale,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 14 * scale),
+
+            SizedBox(height: 14.h),
+
             Text(
-              'Please check your inbox (and spam folder) and follow the instructions to reset your password.',
+              'auth.check_inbox_message'.tr(),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: _secondaryTextColor,
-                fontSize: 12 * scale,
-                height: 1.45,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+                height: 1.5,
               ),
             ),
-            SizedBox(height: 32 * scale),
-            SizedBox(
-              width: double.infinity,
-              height: 48 * scale,
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
-                  foregroundColor: Colors.white,
-                  elevation: 6,
-                  shadowColor: _primaryColor.withValues(alpha: 0.4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                ),
-                child: Text(
-                  'Back to Login',
-                  style: TextStyle(
-                    fontSize: 13 * scale,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+
+            SizedBox(height: 32.h),
+
+            MainBtn(
+              text: 'auth.back_to_login'.tr(),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            SizedBox(height: 12 * scale),
+
+            SizedBox(height: 12.h),
+
             TextButton(
               onPressed: () {
                 context.read<ForgotPasswordCubit>().reset();
+                emailController.clear();
               },
               child: Text(
-                'Resend to a different email',
-                style: TextStyle(
-                  color: _primaryColor,
-                  fontSize: 12 * scale,
-                  fontWeight: FontWeight.w500,
+                'auth.resend_different_email'.tr(),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: colors.primary,
                 ),
               ),
             ),

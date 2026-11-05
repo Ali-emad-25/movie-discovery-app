@@ -44,6 +44,8 @@ dependencies:
   get_it: ^9.3.0
   dio: ^5.11.1
   shared_preferences: ^2.5.6
+  fluttertoast: ^10.0.2
+  flutter_native_splash: ^2.4.8
   google_sign_in: ^7.2.0
 
 dev_dependencies:
@@ -78,7 +80,7 @@ flutter:
         - asset: assets/fonts/Inter.ttf
     - family: NotoSansArabic
       fonts:
-        - asset: assets/fonts/NotoSansArabic.ttf
+        - asset: assets/fonts/Inter.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

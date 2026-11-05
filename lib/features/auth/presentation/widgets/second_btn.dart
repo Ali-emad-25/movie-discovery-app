@@ -4,8 +4,9 @@ import 'package:movie_discovery_app/core/utils/app_assets.dart';
 
 class SecondBtn extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isGoogle;
+
   const SecondBtn({
     super.key,
     required this.text,
@@ -26,8 +27,6 @@ class SecondBtn extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           backgroundColor: colors.surface,
           foregroundColor: colors.onSurface,
-          elevation: isGoogle ? 1 : 4,
-          shadowColor: colors.onSecondary.withValues(alpha: 0.4),
           padding: EdgeInsets.zero,
           side: BorderSide(color: theme.dividerColor),
           shape: RoundedRectangleBorder(
@@ -37,16 +36,16 @@ class SecondBtn extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Visibility(
-              visible: isGoogle,
-              child: Padding(
-                padding: EdgeInsetsDirectional.only(end: 10.w),
-                child: Image.asset(AppAssets.googleLogo),
-              ),
-            ),
+            if (isGoogle) ...[
+              Image.asset(AppAssets.googleLogo, width: 20.w, height: 20.h),
+              SizedBox(width: 10.w),
+            ],
+
             Text(
               text,
-              style: theme.textTheme.displayLarge,
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: colors.onSurface,
+              ),
             ),
           ],
         ),
