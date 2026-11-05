@@ -1,24 +1,47 @@
+
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color transparent = Colors.transparent;
+  AppColors._();
 
-  static const Color bgLightColor = Color(0xFFF8FAFC);
-  static const Color bgDarkColor = Color(0xFF0F131D);
+  static const transparent = Colors.transparent;
 
-  static const Color primaryColor = Color(0xFF7C3AED);
-  static const Color darkBlueColor = Color(0xFF0F172A);
-  static const Color whiteColor = Color(0xFFFFFFFF);
-  static const Color darkGrayColor = Color(0xFF64748B);
-  static const Color lightGrayColor = Color(0xFF94A3B8);
+  // Main Colors
+  static const primaryColor = Color(0xFF7C3AED);
+  static const primaryTextDarkColor = Color(0xFFA783F5);
 
-  static const Color fieldDarkBlueColor = Color(0xFF151923);
-  static const Color fieldWhiteColor = Color(0xFFFFFFFF);
-  static const Color fieldGrayColor = Color(0xFFF1F5F9);
+  // Background Colors
+  static const bgLightColor = Color(0xFFF8FAFC);
+  static const bgDarkColor = Color(0xFF0F131D);
 
-  static const Color borderDarkColor = Color(0xFF252B3B);
-  static const Color borderLightColor = Color(0xFFE2E8F0);
+  // Text Colors
+  static const textLightColor = Color(0xFF0F172A);
+  static const textDarkColor = Colors.white;
 
-  static const Color hintDarkColor = Color(0xFF64748B);
-  static const Color hintLightColor = Color(0xFF94A3B8);
+  static const secondaryTextLightColor = Color(0xFF596A82);
+  static const secondaryTextDarkColor = Color(0xFF8993AA);
+
+  // Card Colors
+  static const cardLightColor = Colors.white;
+  static const cardDarkColor = Color(0xFF1C1F2A);
+
+  // Field Colors
+  static const fieldLightColor = Colors.white;
+  static const fieldDarkColor = Color(0xFF151923);
+
+  // Border Colors
+  static const borderLightColor = Color(0xFFE2E8F0);
+  static const borderDarkColor = Color(0xFF252B3B);
+
+  // Hint Colors
+  static const hintLightColor = Color(0xFF94A3B8);
+  static const hintDarkColor = Color(0xFF64748B);
+
+  // Error Colors
+  static const errorLightColor = Color(0xFFBE123C);
+  static const errorDarkColor = Color(0xFFFB7185);
+
+  // Divider Colors
+  static const dividerLightColor = Color(0xFFE2E8F0);
+  static const dividerDarkColor = Color(0xFF202536);
 }

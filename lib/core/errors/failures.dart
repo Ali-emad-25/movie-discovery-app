@@ -4,7 +4,9 @@ sealed class Failure {
 }
 
 final class ServerFailure extends Failure {
-  const ServerFailure([super.message = 'A server error occurred. Please try again.']);
+  const ServerFailure([
+    super.message = 'A server error occurred. Please try again.',
+  ]);
 }
 
 final class AuthErrorFailure extends Failure {
@@ -12,9 +14,17 @@ final class AuthErrorFailure extends Failure {
 }
 
 final class NetworkFailure extends Failure {
-  const NetworkFailure([super.message = 'Please check your internet connection.']);
+  const NetworkFailure([
+    super.message = 'Please check your internet connection.',
+  ]);
 }
 
 final class UnknownFailure extends Failure {
-  const UnknownFailure([super.message = 'An unexpected error occurred. Please try again.']);
+  const UnknownFailure([
+    super.message = 'An unexpected error occurred. Please try again.',
+  ]);
+}
+
+final class GoogleSignInCancelledFailure extends Failure {
+  const GoogleSignInCancelledFailure() : super('auth.google_sign_in_cancelled');
 }
