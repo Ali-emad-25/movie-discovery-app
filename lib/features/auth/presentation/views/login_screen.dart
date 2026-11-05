@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
+
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -139,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
       1.0,
       1.2,
     );
+
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -279,30 +285,87 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     SizedBox(height: 19 * scale),
 
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48 * scale,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.white,
-                          elevation: 8,
-                          shadowColor: primaryColor.withValues(alpha: 0.4),
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
+
+                    BlocConsumer<AuthCubit, AuthState>(
+                      listener: (context, state) {
+                        if (!(ModalRoute.of(context)?.isCurrent ?? true)) {
+                          return;
+                        }
+                        if (state is AuthSuccess) {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => const _TemporaryHomeScreen(),
+                            ),
+                          );
+                        }
+                        else if (state is AuthFailure) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.message),
+                            ),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+
+                        return SizedBox(
+                          width: double.infinity,
+                          height: 48 * scale,
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                              final email = emailController.text.trim();
+                              final password = passwordController.text;
+
+                              if (email.isEmpty || password.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please enter email and password.',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+
+                              context.read<AuthCubit>().login(
+                                email: email,
+                                password: password,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                              elevation: 8,
+                              shadowColor: primaryColor.withValues(alpha: 0.4),
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                              width: 21,
+                              height: 21,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                                : Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 13 * scale,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 13 * scale,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
+
 
                     SizedBox(height: 12 * scale),
 
@@ -419,6 +482,27 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class _TemporaryHomeScreen extends StatelessWidget {
+  const _TemporaryHomeScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text(
+          'Home Screen',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+          ),
         ),
       ),
     );

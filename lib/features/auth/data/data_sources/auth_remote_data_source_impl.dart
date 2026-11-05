@@ -23,6 +23,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<UserCredential> login({
+    required String email,
+    required String password,
+  }) async {
+    final credential = await firebaseAuth.signInWithEmailAndPassword(
+      email: email.trim(),
+      password: password,
+    );
+
+    return credential;
+  }
+}
   Future<void> sendPasswordResetEmail({required String email}) async {
     await firebaseAuth.sendPasswordResetEmail(email: email.trim());
   }
