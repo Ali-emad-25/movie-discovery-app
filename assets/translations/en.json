@@ -1,3 +1,85 @@
+
 {
-  "ali_emad" : "ALi Emad"
+  "auth": {
+    "welcome_back": "Welcome Back",
+    "sign_in_to_continue": "Sign in to continue",
+    "create_account": "Create Account",
+    "join_to_start": "Join us and start your journey",
+    "full_name": "Full Name",
+    "name_required": "Name is required",
+    "name_invalid": "Name must contain at least 2 characters",
+    "email": "Email Address",
+    "email_required": "Email is required",
+    "invalid_email": "Please enter a valid email address",
+    "password": "Password",
+    "password_required": "Password is required",
+    "weak_password": "Password is too weak. Please use a stronger password",
+    "confirm_password": "Confirm Password",
+    "confirm_password_required": "Please confirm your password",
+    "passwords_not_match": "Passwords do not match",
+    "forgot_password": "Forgot Password?",
+    "login": "Login",
+    "sign_up": "Sign Up",
+    "continue_as_guest": "Continue as Guest",
+    "or_continue_with": "Or continue with",
+    "continue_with_google": "Continue with Google",
+    "no_account": "Don't have an account?",
+    "already_have_account": "Already have an account?",
+    "register_success": "Account created successfully",
+    "login_success": "Logged in successfully",
+    "register_error": "An error occurred while creating your account",
+    "login_error": "An error occurred while logging in",
+    "user_not_found": "This account does not exist",
+    "user_disabled": "This account has been disabled",
+    "wrong_password": "Incorrect password",
+    "invalid_credential": "Incorrect email or password",
+    "email_already_in_use": "This email is already in use",
+    "operation_not_allowed": "This sign-in method is not enabled",
+    "too_many_requests": "Too many attempts. Please try again later",
+    "guest": "Guest",
+    "forgot_password_title": "Reset Password",
+    "forgot_password_description": "Enter your email address and we will send you a link to reset your password.",
+    "send_reset_link": "Send Reset Link",
+    "back_to_login": "Back to Login",
+    "reset_link_sent": "Reset Link Sent",
+    "reset_link_sent_description": "We have sent an email to:",
+    "check_inbox_message": "Please check your inbox. If you can't find the email, check your spam folder.",
+    "resend_different_email": "Use a different email address",
+    "logout_success": "Logged out successfully"
+  },
+  "errors": {
+    "network_error": "Unable to connect. Please check your internet connection and try again",
+    "unknown_error": "Something went wrong. Please try again"
+  },
+  "profile": {
+    "guest": "Guest",
+    "guest_message": "Sign in to enjoy all features",
+    "user": "User",
+    "no_email": "No email address",
+    "watchlist": "Watchlist",
+    "history": "History",
+    "favorite": "Favorites",
+    "account": "Account",
+    "notifications": "Notifications",
+    "language": "Language",
+    "dark_mode": "Dark Mode",
+    "about": "About",
+    "logout": "Log Out",
+    "logout_confirm": "Are you sure you want to log out?",
+    "footer": "Discover the world of movies and TV shows",
+    "login_required": "Login Required",
+    "login_required_message": "Please log in first to use this feature."
+  },
+  "nav": {
+    "library": "Library",
+    "discover": "Discover",
+    "home": "Home",
+    "profile": "Profile"
+  },
+
+  "common": {
+    "login": "Login",
+    "cancel": "Cancel",
+    "coming_soon": "Coming Soon"
+  }
 }

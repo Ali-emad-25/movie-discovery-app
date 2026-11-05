@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 abstract class AuthRemoteDataSource {
   Future<UserCredential> register({
     required String name,
@@ -6,12 +7,20 @@ abstract class AuthRemoteDataSource {
     required String password,
   });
 
+  Future<void> sendPasswordResetEmail({
+    required String email,
+  });
+
   Future<UserCredential> login({
     required String email,
     required String password,
   });
 
-  Future<void> sendPasswordResetEmail({
-    required String email,
-  });
+  Future<User?> getCurrentUser();
+
+  Future<void> logout();
+
+  Future<UserCredential> continueAsGuest();
+
+  Future<UserCredential> signInWithGoogle();
 }

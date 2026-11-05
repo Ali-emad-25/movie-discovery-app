@@ -19,24 +19,31 @@ class AuthHeader extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.r),
             boxShadow: [
               BoxShadow(
-                color: colors.primary.withValues(alpha:  0.25),
-                blurRadius: 20.r,
+                color: colors.primary.withValues(alpha: 0.20),
+                blurRadius: 30.r,
                 spreadRadius: 10.r,
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15.r),
-            child: Image.asset(AppAssets.logo, fit: BoxFit.cover),
-          ),
+          child: Image.asset(AppAssets.logo, fit: BoxFit.cover),
         ),
+
         SizedBox(height: 10.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Movie', style: theme.textTheme.titleLarge),
-            Text('Verse', style: theme.textTheme.titleMedium),
-          ],
+
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Movie', style: theme.textTheme.titleLarge),
+              Text(
+                'Verse',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

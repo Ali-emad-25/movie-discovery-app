@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
+import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
+import 'package:movie_discovery_app/core/widgets/app_toast.dart';
+
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
+
 import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_header.dart';
 import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:movie_discovery_app/features/auth/presentation/widgets/second_btn.dart';
 import 'package:movie_discovery_app/features/auth/presentation/widgets/main_btn.dart';
 import 'package:movie_discovery_app/features/auth/presentation/widgets/text_btn.dart';
-import 'package:movie_discovery_app/core/utils/app_assets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
-import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
-
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,42 +24,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final formKey = GlobalKey<FormState>();
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  bool obscurePassword = true;
-
-  bool get isDark => Theme.of(context).brightness == Brightness.dark;
-
-  Color get backgroundColor =>
-      isDark ? AppColors.bgDarkColor : AppColors.bgLightColor;
-
-  Color get fieldColor =>
-      isDark ? AppColors.fieldDarkColor : AppColors.fieldLightColor;
-
-  Color get borderColor =>
-      isDark ? AppColors.borderDarkColor : AppColors.borderLightColor;
-
-  Color get textColor =>
-      isDark ? AppColors.textDarkColor : AppColors.textLightColor;
-
-  Color get secondaryTextColor => isDark
-      ? AppColors.secondaryTextDarkColor
-      : AppColors.secondaryTextLightColor;
-
-  Color get hintColor =>
-      isDark ? AppColors.hintDarkColor : AppColors.hintLightColor;
-
-  Color get mutedTextColor =>
-      isDark ? AppColors.mutedTextDarkColor : AppColors.mutedTextLightColor;
-
-  Color get dividerColor =>
-      isDark ? AppColors.dividerDarkColor : AppColors.dividerLightColor;
-
-  Color get logoBgColor =>
-      isDark ? AppColors.logoBgDarkColor : AppColors.logoBgLightColor;
-
-  Color get primaryColor => AppColors.primaryColor;
 
   @override
   void dispose() {
@@ -65,94 +36,26 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void login() {
+    if (!formKey.currentState!.validate()) return;
+
+    context.read<AuthCubit>().login(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+  }
+
+  void continueAsGuest() {
+    context.read<AuthCubit>().continueAsGuest();
+  }
+
+  void signInWithGoogle() {
+    context.read<AuthCubit>().signInWithGoogle(isRegister: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-  Widget buildTextField({
-    required String hint,
-    required IconData prefixIcon,
-    required TextEditingController controller,
-    bool isPassword = false,
-  }) {
-    return SizedBox(
-      height: 50,
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword && obscurePassword,
-        keyboardType: hint == 'Email'
-            ? TextInputType.emailAddress
-            : TextInputType.text,
-        style: TextStyle(color: textColor, fontSize: 18),
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: TextStyle(color: hintColor, fontSize: 13),
-          prefixIcon: Icon(prefixIcon, size: 22, color: secondaryTextColor),
-          suffixIcon: isPassword
-              ? IconButton(
-                  onPressed: () {
-                    setState(() {
-                      obscurePassword = !obscurePassword;
-                    });
-                  },
-                  icon: Icon(
-                    obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    size: 17,
-                    color: secondaryTextColor,
-                  ),
-                )
-              : null,
-          filled: true,
-          fillColor: fieldColor,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 12,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(28),
-            borderSide: BorderSide(color: borderColor),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(28),
-            borderSide: BorderSide(color: borderColor),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(28),
-            borderSide: BorderSide(color: primaryColor),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildSocialButton({
-    required Widget icon,
-    required VoidCallback onPressed,
-  }) {
-    return SizedBox(
-      width: 46,
-      height: 46,
-      child: OutlinedButton(
-        onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.zero,
-          backgroundColor: fieldColor,
-          side: BorderSide(color: borderColor),
-          shape: const CircleBorder(),
-        ),
-        child: icon,
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final double scale = (MediaQuery.of(context).size.width / 375).clamp(
-      1.0,
-      1.2,
-    );
-
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -162,208 +65,197 @@ class _LoginScreenState extends State<LoginScreen> {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(28.w, 48.h, 28.w, 16.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Center(child: AuthHeader()),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Center(child: AuthHeader()),
 
-                    SizedBox(height: 42.h),
+                      SizedBox(height: 42.h),
 
-                    Text('Welcome Back', style: theme.textTheme.bodyLarge),
+                      Text(
+                        'auth.welcome_back'.tr(),
+                        style: theme.textTheme.bodyLarge,
+                      ),
 
-                    SizedBox(height: 2.h),
+                      SizedBox(height: 2.h),
 
-                    Text(
-                      'Sign in to continue',
-                      style: theme.textTheme.bodySmall,
-                    ),
+                      Text(
+                        'auth.sign_in_to_continue'.tr(),
+                        style: theme.textTheme.bodySmall,
+                      ),
 
-                    SizedBox(height: 20.h),
+                      SizedBox(height: 20.h),
 
-                    AuthTextField(
-                      hint: 'Email',
-                      prefixIcon: Icons.mail_outline,
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
+                      AuthTextField(
+                        hint: 'auth.email'.tr(),
+                        prefixIcon: Icons.mail_outline,
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'auth.email_required'.tr();
+                          }
 
-                    SizedBox(height: 13.h),
+                          if (!RegExp(
+                            r'^[^\s@]+@[^\s@]+\.[^\s@]+$',
+                          ).hasMatch(value.trim())) {
+                            return 'auth.invalid_email'.tr();
+                          }
 
-                    AuthTextField(
-                      hint: 'Password',
-                      prefixIcon: Icons.lock_outline,
-                      controller: passwordController,
-                      isPassword: true,
-                    ),
+                          return null;
+                        },
+                      ),
 
-                    SizedBox(height: 15.h),
+                      SizedBox(height: 13.h),
 
-                    TextBtn(text: 'Forgot password?', onTap: () {}),
+                      AuthTextField(
+                        hint: 'auth.password'.tr(),
+                        prefixIcon: Icons.lock_outline,
+                        controller: passwordController,
+                        isPassword: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'auth.password_required'.tr();
+                          }
 
-                    SizedBox(height: 35.h),
+                          return null;
+                        },
+                      ),
 
+                      SizedBox(height: 15.h),
 
-                    BlocConsumer<AuthCubit, AuthState>(
-                      listener: (context, state) {
-                        if (!(ModalRoute.of(context)?.isCurrent ?? true)) {
-                          return;
-                        }
-                        if (state is AuthSuccess) {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const _TemporaryHomeScreen(),
-                            ),
+                      TextBtn(
+                        text: 'auth.forgot_password'.tr(),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.forgotPasswordScreenRouteName,
                           );
-                        }
-                        else if (state is AuthFailure) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.message),
-                            ),
-                          );
-                        }
-                      },
-                      builder: (context, state) {
-                        final isLoading = state is AuthLoading;
+                        },
+                      ),
 
-                        return SizedBox(
-                          width: double.infinity,
-                          height: 48 * scale,
-                          child: ElevatedButton(
-                            onPressed: isLoading
-                                ? null
-                                : () {
-                              final email = emailController.text.trim();
-                              final password = passwordController.text;
+                      SizedBox(height: 35.h),
 
-                              if (email.isEmpty || password.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Please enter email and password.',
+                      BlocConsumer<AuthCubit, AuthState>(
+                        listener: (context, state) async {
+                          if (state is AuthLoginSuccess) {
+                            final settingsCubit = context.read<SettingsCubit>();
+
+                            if (state.user.isGuest) {
+                              await settingsCubit.setGuestDefaults();
+                              if (!context.mounted) return;
+
+                              await context.setLocale(const Locale('en'));
+                            } else {
+                              await settingsCubit.loadSettings();
+                              if (!context.mounted) return;
+
+                              await context.setLocale(
+                                Locale(
+                                  settingsCubit.state.settings.languageCode,
+                                ),
+                              );
+                            }
+
+                            if (!context.mounted) return;
+
+                            AppToast.success(
+                              context,
+                              message: 'auth.login_success'.tr(),
+                            );
+
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              AppRoutes.homeScreenRouteName,
+                              (route) => false,
+                            );
+                          } else if (state is AuthFailure) {
+                            AppToast.error(
+                              context,
+                              message: state.message.tr(),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          final isLoading = state is AuthLoading;
+
+                          return Column(
+                            children: [
+                              MainBtn(
+                                text: 'auth.login'.tr(),
+                                onPressed: isLoading ? null : login,
+                                isLoading: isLoading,
+                              ),
+
+                              SizedBox(height: 12.h),
+
+                              SecondBtn(
+                                text: 'auth.continue_as_guest'.tr(),
+                                onPressed: isLoading ? null : continueAsGuest,
+                              ),
+
+                              SizedBox(height: 25.h),
+
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Divider(
+                                      color: theme.dividerColor,
+                                      thickness: 1,
                                     ),
                                   ),
-                                );
-                                return;
-                              }
 
-                              context.read<AuthCubit>().login(
-                                email: email,
-                                password: password,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.white,
-                              elevation: 8,
-                              shadowColor: primaryColor.withValues(alpha: 0.4),
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 10.w,
+                                    ),
+                                    child: Text(
+                                      'auth.or_continue_with'.tr(),
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  ),
+
+                                  Expanded(
+                                    child: Divider(
+                                      color: theme.dividerColor,
+                                      thickness: 1,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            child: isLoading
-                                ? const SizedBox(
-                              width: 21,
-                              height: 21,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
+
+                              SizedBox(height: 19.h),
+
+                              SecondBtn(
+                                text: 'auth.continue_with_google'.tr(),
+                                onPressed: isLoading ? null : signInWithGoogle,
+                                isGoogle: true,
                               ),
-                            )
-                                : Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: 13 * scale,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-
-
-                    SizedBox(height: 12 * scale),
-
-                    SecondBtn(
-                      text: 'Continue as guest',
-                      onPressed: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.homeScreenRouteName,
-                        );
-                      },
-                    ),
-
-                    SizedBox(height: 25.h),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(color: dividerColor, thickness: 1),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10 * scale),
-                          child: Text(
-                            'or continue with',
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(color: dividerColor, thickness: 1),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 19.h),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        buildSocialButton(
-                          onPressed: () {},
-                          icon: Text(
-                            'G',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  Theme.of(context).brightness ==
-                                      Brightness.light
-                                  ? Colors.black
-                                  : Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 14 * scale),
-                        buildSocialButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.apple,
-                            size: 22 * scale,
-                            color: textColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                            ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
 
             Padding(
-              padding: EdgeInsets.fromLTRB(12, 10, 12, 24 * scale),
+              padding: EdgeInsets.only(bottom: 25.h, top: 15.h),
               child: Row(
-                spacing: 5,
+                spacing: 5.w,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
-                    style: TextStyle(color: secondaryTextColor, fontSize: 12),
+                    'auth.no_account'.tr(),
+                    style: theme.textTheme.bodySmall,
                   ),
+
                   TextBtn(
-                    text: 'SignUp',
+                    text: 'auth.sign_up'.tr(),
                     onTap: () {
                       Navigator.pushNamed(
                         context,
@@ -375,27 +267,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-
-class _TemporaryHomeScreen extends StatelessWidget {
-  const _TemporaryHomeScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Text(
-          'Home Screen',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-          ),
         ),
       ),
     );

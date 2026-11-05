@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:movie_discovery_app/core/errors/failures.dart';
 
@@ -5,27 +6,37 @@ class FirebaseAuthErrorHandler {
   static Failure handle(FirebaseAuthException exception) {
     switch (exception.code) {
       case 'user-not-found':
-        return const AuthErrorFailure('No user found with this email address.');
+        return const AuthErrorFailure('auth.user_not_found');
+
       case 'invalid-email':
-        return const AuthErrorFailure('The provided email address is not valid.');
+        return const AuthErrorFailure('auth.invalid_email');
+
       case 'user-disabled':
-        return const AuthErrorFailure('This user account has been disabled.');
+        return const AuthErrorFailure('auth.user_disabled');
+
       case 'wrong-password':
-        return const AuthErrorFailure('Incorrect password. Please try again.');
+        return const AuthErrorFailure('auth.wrong_password');
+
+      case 'invalid-credential':
+        return const AuthErrorFailure('auth.invalid_credential');
+
       case 'email-already-in-use':
-        return const AuthErrorFailure('An account already exists for this email.');
+        return const AuthErrorFailure('auth.email_already_in_use');
+
       case 'operation-not-allowed':
-        return const AuthErrorFailure('Email/password accounts are not enabled.');
+        return const AuthErrorFailure('auth.operation_not_allowed');
+
       case 'weak-password':
-        return const AuthErrorFailure('The password provided is too weak.');
+        return const AuthErrorFailure('auth.weak_password');
+
       case 'network-request-failed':
-        return const NetworkFailure('Network connection failed. Please check your internet.');
+        return const NetworkFailure('errors.network_error');
+
       case 'too-many-requests':
-        return const AuthErrorFailure('Too many requests. Please try again later.');
+        return const AuthErrorFailure('auth.too_many_requests');
+
       default:
-        return AuthErrorFailure(
-          exception.message ?? 'An authentication error occurred. Please try again.',
-        );
+        return const AuthErrorFailure('auth.login_error');
     }
   }
 }

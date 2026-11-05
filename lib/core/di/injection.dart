@@ -1,58 +1,122 @@
-
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
+import 'package:movie_discovery_app/core/utils/settings_repository_impl.dart';
+import 'package:movie_discovery_app/core/utils/settings_use_cases.dart';
+
 import 'package:movie_discovery_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:movie_discovery_app/features/auth/data/data_sources/auth_remote_data_source_impl.dart';
 import 'package:movie_discovery_app/features/auth/data/repositories/auth_repository_impl.dart';
+
 import 'package:movie_discovery_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:movie_discovery_app/features/auth/domain/use_cases/continue_as_guest_use_case.dart';
+import 'package:movie_discovery_app/features/auth/domain/use_cases/get_current_user_use_case.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/login_use_case.dart';
+import 'package:movie_discovery_app/features/auth/domain/use_cases/google_sign_in_use_case.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/send_password_reset_email_use_case.dart';
+
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/forgot_password_cubit.dart';
+
+import 'package:movie_discovery_app/features/home/profile_tab/domain/use_cases/profile_use_cases.dart';
+import 'package:movie_discovery_app/features/home/profile_tab/presentation/view_models/profile_cubit.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
   // Firebase
-  getIt.registerLazySingleton<FirebaseAuth>(
-        () => FirebaseAuth.instance,
-  );
+  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
 
-  // Data Source
+  // Auth Data Sources
   getIt.registerLazySingleton<AuthRemoteDataSource>(
-        () => AuthRemoteDataSourceImpl(getIt<FirebaseAuth>()),
+    () => AuthRemoteDataSourceImpl(getIt<FirebaseAuth>()),
   );
 
-  // Repository
+  // Auth Repository
   getIt.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
+    () => AuthRepositoryImpl(getIt<AuthRemoteDataSource>()),
   );
 
-  // Register Use Case
-  // Use Cases
+  // Auth Use Cases
   getIt.registerLazySingleton<RegisterUseCase>(
-        () => RegisterUseCase(getIt<AuthRepository>()),
+    () => RegisterUseCase(getIt<AuthRepository>()),
   );
 
-  // Login Use Case
   getIt.registerLazySingleton<LoginUseCase>(
-        () => LoginUseCase(getIt<AuthRepository>()),
+    () => LoginUseCase(getIt<AuthRepository>()),
   );
+
+  getIt.registerLazySingleton<ContinueAsGuestUseCase>(
+    () => ContinueAsGuestUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<GoogleSignInUseCase>(
+    () => GoogleSignInUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<GetCurrentUserUseCase>(
+    () => GetCurrentUserUseCase(getIt<AuthRepository>()),
+  );
+
   getIt.registerLazySingleton<SendPasswordResetEmailUseCase>(
     () => SendPasswordResetEmailUseCase(getIt<AuthRepository>()),
   );
 
-  // Cubits
+  // Profile Use Cases
+  getIt.registerLazySingleton<GetProfileUseCase>(
+    () => GetProfileUseCase(getIt<AuthRepository>()),
+  );
+
+  getIt.registerLazySingleton<LogoutUseCase>(
+    () => LogoutUseCase(getIt<AuthRepository>()),
+  );
+
+  // Auth Cubits
   getIt.registerFactory<AuthCubit>(
-        () => AuthCubit(
-      registerUseCase: getIt<RegisterUseCase>(),
-      loginUseCase: getIt<LoginUseCase>(),
+    () => AuthCubit(
+      registerUseCase: getIt(),
+      loginUseCase: getIt(),
+      continueAsGuestUseCase: getIt(),
+      googleSignInUseCase: getIt(),
+      getCurrentUserUseCase: getIt(),
     ),
   );
+
   getIt.registerFactory<ForgotPasswordCubit>(
     () => ForgotPasswordCubit(
       sendPasswordResetEmailUseCase: getIt<SendPasswordResetEmailUseCase>(),
+    ),
+  );
+
+  // Profile Cubit
+  getIt.registerFactory<ProfileCubit>(
+    () => ProfileCubit(
+      getProfileUseCase: getIt<GetProfileUseCase>(),
+      logoutUseCase: getIt<LogoutUseCase>(),
+    ),
+  );
+
+  // Settings Repository
+  getIt.registerLazySingleton<SettingsRepository>(
+    () => const SettingsRepositoryImpl(),
+  );
+
+  // Settings Use Cases
+  getIt.registerLazySingleton<LoadSettingsUseCase>(
+    () => LoadSettingsUseCase(getIt<SettingsRepository>()),
+  );
+
+  getIt.registerLazySingleton<SaveSettingsUseCase>(
+    () => SaveSettingsUseCase(getIt<SettingsRepository>()),
+  );
+
+  // Settings Cubit
+  getIt.registerFactory<SettingsCubit>(
+    () => SettingsCubit(
+      loadSettingsUseCase: getIt<LoadSettingsUseCase>(),
+      saveSettingsUseCase: getIt<SaveSettingsUseCase>(),
     ),
   );
 }
