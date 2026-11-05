@@ -1,26 +1,43 @@
+
 import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color transparent = Colors.transparent;
+
+  // Background Colors
   static const Color bgLightColor = Color(0xFFF8FAFC);
   static const Color loginLightColor = Color(0xFFFAF8FF);
   static const Color bgDarkColor = Color(0xFF0F131D);
-  static const Color darkBlueColor = Color(0xFF0F172A);
 
+  // Primary Colors
   static const Color primaryColor = Color(0xFF7C3AED);
+  static const Color darkBlueColor = Color(0xFF0F172A);
+  static const Color whiteColor = Color(0xFFFFFFFF);
+
+  // Gray Colors
+  static const Color darkGrayColor = Color(0xFF64748B);
+  static const Color lightGrayColor = Color(0xFF94A3B8);
+
+  // Profile Colors
   static const Color primaryTextDarkColor = Color(0xFFB89BFF);
   static const Color cardDarkColor = Color(0xFF1C1F2A);
   static const Color profileLightColor = Color(0xFFF7F1FF);
   static const Color profileDarkColor = Color(0xFF342447);
+
+  // Error Colors
   static const Color errorLightColor = Color(0xFFBE123C);
   static const Color errorDarkColor = Color(0xFFFB7185);
 
-  static const Color fieldDarkColor = Color(0xFF151923);
-  static const Color fieldLightColor = Color(0xFFFFFFFF);
+  // Text Field Colors
+  static const Color fieldDarkBlueColor = Color(0xFF151923);
+  static const Color fieldWhiteColor = Color(0xFFFFFFFF);
+  static const Color fieldGrayColor = Color(0xFFF1F5F9);
 
+  // Border Colors
   static const Color borderDarkColor = Color(0xFF252B3B);
   static const Color borderLightColor = Color(0xFFE2E8F0);
 
+  // Text Colors
   static const Color textDarkColor = Color(0xFFFFFFFF);
   static const Color textLightColor = darkBlueColor;
 
@@ -33,9 +50,11 @@ class AppColors {
   static const Color mutedTextDarkColor = secondaryTextDarkColor;
   static const Color mutedTextLightColor = secondaryTextLightColor;
 
+  // Divider Colors
   static const Color dividerDarkColor = Color(0xFF202536);
   static const Color dividerLightColor = Color(0xFFE2E8F0);
 
+  // Logo Colors
   static const Color logoBgDarkColor = Color(0xFF171326);
   static const Color logoBgLightColor = Color(0xFFEDE9FE);
 }

@@ -1,4 +1,6 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:movie_discovery_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -23,15 +25,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> sendPasswordResetEmail({required String email}) async {
-    await firebaseAuth.sendPasswordResetEmail(email: email.trim());
-  }
-
-  @override
   Future<UserCredential> login({
     required String email,
     required String password,
-  }) async {
+  }) {
     return firebaseAuth.signInWithEmailAndPassword(
       email: email.trim(),
       password: password,
@@ -43,4 +40,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> logout() => firebaseAuth.signOut();
+
+  @override
+  Future<void> sendPasswordResetEmail({
+    required String email,
+  }) {
+    return firebaseAuth.sendPasswordResetEmail(
+      email: email.trim(),
+    );
+  }
 }

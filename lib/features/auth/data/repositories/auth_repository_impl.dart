@@ -1,7 +1,10 @@
+
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+
 import 'package:movie_discovery_app/core/errors/failures.dart';
 import 'package:movie_discovery_app/core/errors/firebase_auth_error_handler.dart';
 import 'package:movie_discovery_app/core/network/api_result.dart';
+
 import 'package:movie_discovery_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/auth/domain/repositories/auth_repository.dart';
@@ -29,12 +32,7 @@ class AuthRepositoryImpl implements AuthRepository {
       throw Exception('Failed to create user account.');
     }
 
-    return User(
-      id: user.uid,
-      email: user.email ?? email.trim(),
-      displayName: user.displayName ?? name.trim(),
-      isGuest: user.isAnonymous,
-    );
+    return _mapUser(user);
   }
 
   @override
@@ -47,10 +45,13 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
+
       final user = credential.user;
+
       if (user == null) {
         return const ApiError(AuthErrorFailure('auth.login_error'));
       }
+
       return ApiSuccess(_mapUser(user));
     } on fb.FirebaseAuthException catch (e) {
       return ApiError(FirebaseAuthErrorHandler.handle(e));
@@ -62,6 +63,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<ApiResult<User>> continueAsGuest() async {
     final result = await logout();
+
     return switch (result) {
       ApiSuccess() => const ApiSuccess(User.guest()),
       ApiError(failure: final failure) => ApiError(failure),
@@ -92,13 +94,15 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  User _mapUser(fb.User user) => User(
-    id: user.uid,
-    email: user.email ?? '',
-    displayName: user.displayName,
-    photoUrl: user.photoURL,
-    isGuest: user.isAnonymous,
-  );
+  User _mapUser(fb.User user) {
+    return User(
+      id: user.uid,
+      email: user.email ?? '',
+      displayName: user.displayName,
+      photoUrl: user.photoURL,
+      isGuest: user.isAnonymous,
+    );
+  }
 
   @override
   Future<ApiResult<void>> sendPasswordResetEmail({

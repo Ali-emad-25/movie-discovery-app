@@ -35,7 +35,7 @@ class _ForgotPasswordViewState extends State<_ForgotPasswordView> {
       _isDark ? AppColors.bgDarkColor : AppColors.bgLightColor;
 
   Color get _fieldColor =>
-      _isDark ? AppColors.fieldDarkColor : AppColors.fieldLightColor;
+      _isDark ? AppColors.fieldDarkBlueColor : AppColors.fieldWhiteColor;
 
   Color get _borderColor =>
       _isDark ? AppColors.borderDarkColor : AppColors.borderLightColor;
