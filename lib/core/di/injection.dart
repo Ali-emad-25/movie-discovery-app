@@ -7,7 +7,9 @@ import 'package:movie_discovery_app/features/auth/data/repositories/auth_reposit
 import 'package:movie_discovery_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/register_use_case.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/login_use_case.dart';
+import 'package:movie_discovery_app/features/auth/domain/use_cases/send_password_reset_email_use_case.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/auth/presentation/view_models/forgot_password_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -28,6 +30,7 @@ Future<void> configureDependencies() async {
   );
 
   // Register Use Case
+  // Use Cases
   getIt.registerLazySingleton<RegisterUseCase>(
         () => RegisterUseCase(getIt<AuthRepository>()),
   );
@@ -36,12 +39,20 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<LoginUseCase>(
         () => LoginUseCase(getIt<AuthRepository>()),
   );
+  getIt.registerLazySingleton<SendPasswordResetEmailUseCase>(
+    () => SendPasswordResetEmailUseCase(getIt<AuthRepository>()),
+  );
 
-  // Cubit
+  // Cubits
   getIt.registerFactory<AuthCubit>(
         () => AuthCubit(
       registerUseCase: getIt<RegisterUseCase>(),
       loginUseCase: getIt<LoginUseCase>(),
+    ),
+  );
+  getIt.registerFactory<ForgotPasswordCubit>(
+    () => ForgotPasswordCubit(
+      sendPasswordResetEmailUseCase: getIt<SendPasswordResetEmailUseCase>(),
     ),
   );
 }

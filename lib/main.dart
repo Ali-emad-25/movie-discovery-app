@@ -6,6 +6,7 @@ import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_theme.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/login_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -51,8 +52,9 @@ class MyApp extends StatelessWidget {
             themeMode: ThemeMode.light,
             initialRoute: AppRoutes.loginScreenRouteName,
             routes: {
-              AppRoutes.loginScreenRouteName: (context) => LoginScreen(),
-              AppRoutes.registerScreenRouteName: (context) => RegisterScreen(),
+              AppRoutes.loginScreenRouteName: (context) => const LoginScreen(),
+              AppRoutes.registerScreenRouteName: (context) => const RegisterScreen(),
+              AppRoutes.forgotPasswordScreenRouteName: (context) => const ForgotPasswordScreen(),
             },
           ),
         );
