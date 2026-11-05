@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
-import 'package:movie_discovery_app/core/utils/app_colors.dart';
 
 class SecondBtn extends StatelessWidget {
   final String text;
