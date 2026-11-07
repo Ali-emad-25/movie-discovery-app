@@ -29,6 +29,11 @@ import 'package:movie_discovery_app/features/home/home_tab/data/repositories/hom
 import 'package:movie_discovery_app/features/home/home_tab/domain/repositories/home_repository.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/use_cases/home_use_cases.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_cubit.dart';
+import 'package:movie_discovery_app/features/movie_details/data/data_sources/movie_details_remote_data_source.dart';
+import 'package:movie_discovery_app/features/movie_details/data/repositories/movie_details_repository_impl.dart';
+import 'package:movie_discovery_app/features/movie_details/domain/repositories/movie_details_repository.dart';
+import 'package:movie_discovery_app/features/movie_details/domain/use_cases/get_movie_details_use_case.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -125,6 +130,22 @@ Future<void> configureDependencies() async {
       getPopularMoviesUseCase: getIt<GetPopularMoviesUseCase>(),
       getTopRatedMoviesUseCase: getIt<GetTopRatedMoviesUseCase>(),
       getNowPlayingMoviesUseCase: getIt<GetNowPlayingMoviesUseCase>(),
+    ),
+  );
+
+  // Movie Details Feature
+  getIt.registerLazySingleton<MovieDetailsRemoteDataSource>(
+    () => MovieDetailsRemoteDataSourceImpl(getIt<ApiManager>()),
+  );
+  getIt.registerLazySingleton<MovieDetailsRepository>(
+    () => MovieDetailsRepositoryImpl(getIt<MovieDetailsRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<GetMovieDetailsUseCase>(
+    () => GetMovieDetailsUseCase(getIt<MovieDetailsRepository>()),
+  );
+  getIt.registerFactory<MovieDetailsCubit>(
+    () => MovieDetailsCubit(
+      getMovieDetailsUseCase: getIt<GetMovieDetailsUseCase>(),
     ),
   );
 

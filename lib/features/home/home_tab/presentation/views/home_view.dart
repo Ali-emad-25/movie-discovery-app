@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
+import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
@@ -28,118 +29,10 @@ class _HomeViewBody extends StatelessWidget {
   const _HomeViewBody();
 
   void _showMovieDetails(BuildContext context, Movie movie) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.textDarkColor : AppColors.textLightColor;
-    final secondaryColor =
-        isDark ? AppColors.secondaryTextDarkColor : AppColors.secondaryTextLightColor;
-    final bgColor = isDark ? AppColors.cardDarkColor : AppColors.cardLightColor;
-
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: bgColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-      ),
-      builder: (bottomSheetContext) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.7,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          builder: (_, scrollController) {
-            return ListView(
-              controller: scrollController,
-              padding: EdgeInsets.all(20.r),
-              children: [
-                Center(
-                  child: Container(
-                    width: 40.w,
-                    height: 4.h,
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.borderDarkColor : AppColors.borderLightColor,
-                      borderRadius: BorderRadius.circular(2.r),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 18.h),
-                if (movie.backdropPath != null && movie.backdropPath!.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: Image.network(
-                      movie.backdropUrl,
-                      height: 180.h,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                SizedBox(height: 16.h),
-                Text(
-                  movie.title,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.star_rounded,
-                      color: const Color(0xFFFBBF24),
-                      size: 18.sp,
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      movie.ratingFormatted,
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Text(
-                      movie.releaseYear,
-                      style: TextStyle(
-                        color: secondaryColor,
-                        fontSize: 12.5.sp,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14.h),
-                Text(
-                  'Overview',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  movie.overview.isNotEmpty ? movie.overview : 'No overview available.',
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontSize: 13.sp,
-                    height: 1.5,
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(bottomSheetContext);
-                    showComingSoon(context);
-                  },
-                  icon: const Icon(Icons.play_circle_fill_rounded),
-                  label: const Text('Watch Trailer'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+    Navigator.pushNamed(
+      context,
+      AppRoutes.movieDetailsRouteName,
+      arguments: movie.id,
     );
   }
 
