@@ -173,3 +173,4 @@ class _MovieDetailsShimmerLoadingState extends State<MovieDetailsShimmerLoading>
     );
   }
 }
+

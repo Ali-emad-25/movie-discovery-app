@@ -4,3 +4,4 @@ import 'package:movie_discovery_app/features/movie_details/domain/entities/movie
 abstract class MovieDetailsRepository {
   Future<ApiResult<MovieDetails>> getMovieDetails(int movieId);
 }
+

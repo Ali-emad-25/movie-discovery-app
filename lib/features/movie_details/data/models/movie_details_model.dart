@@ -1,5 +1,6 @@
 import 'package:movie_discovery_app/features/home/home_tab/data/models/movie_model.dart';
 import 'package:movie_discovery_app/features/movie_details/data/models/cast_model.dart';
+import 'package:movie_discovery_app/features/movie_details/data/models/movie_video_model.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/entities/movie_details.dart';
 
 class MovieDetailsModel extends MovieDetails {
@@ -18,6 +19,7 @@ class MovieDetailsModel extends MovieDetails {
     super.trailerKey,
     super.cast = const [],
     super.similarMovies = const [],
+    super.videos = const [],
   });
 
   factory MovieDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -47,22 +49,49 @@ class MovieDetailsModel extends MovieDetails {
             .toList() ??
         const [];
 
-    // Parse trailer key (look for YouTube Trailer)
+    // Parse official trailers only
+    final List<MovieVideoModel> videosList = [];
     String? trailerKey;
     final videosJson = json['videos'] != null
         ? (json['videos'] as Map<String, dynamic>)['results'] as List<dynamic>?
         : null;
     if (videosJson != null && videosJson.isNotEmpty) {
+      // 1. First priority: Official YouTube Trailers
       for (final v in videosJson) {
-        final video = v as Map<String, dynamic>;
-        final site = video['site'] as String?;
-        final type = video['type'] as String?;
-        if (site == 'YouTube' && (type == 'Trailer' || type == 'Teaser')) {
-          trailerKey = video['key'] as String?;
-          if (type == 'Trailer') break;
+        final videoMap = v as Map<String, dynamic>;
+        final site = videoMap['site'] as String?;
+        final type = videoMap['type'] as String?;
+        final official = videoMap['official'] as bool? ?? false;
+        if (site == 'YouTube' && type == 'Trailer' && official) {
+          videosList.add(MovieVideoModel.fromJson(videoMap));
         }
       }
-      trailerKey ??= (videosJson.first as Map<String, dynamic>)['key'] as String?;
+
+      // 2. Fallback: Any YouTube Trailer if no official ones found
+      if (videosList.isEmpty) {
+        for (final v in videosJson) {
+          final videoMap = v as Map<String, dynamic>;
+          final site = videoMap['site'] as String?;
+          final type = videoMap['type'] as String?;
+          if (site == 'YouTube' && type == 'Trailer') {
+            videosList.add(MovieVideoModel.fromJson(videoMap));
+          }
+        }
+      }
+
+      // 3. Fallback: Official Teasers if still empty
+      if (videosList.isEmpty) {
+        for (final v in videosJson) {
+          final videoMap = v as Map<String, dynamic>;
+          final site = videoMap['site'] as String?;
+          final type = videoMap['type'] as String?;
+          if (site == 'YouTube' && type == 'Teaser') {
+            videosList.add(MovieVideoModel.fromJson(videoMap));
+          }
+        }
+      }
+
+      trailerKey = videosList.isNotEmpty ? videosList.first.key : null;
     }
 
     return MovieDetailsModel(
@@ -80,6 +109,8 @@ class MovieDetailsModel extends MovieDetails {
       trailerKey: trailerKey,
       cast: castList,
       similarMovies: similarList,
+      videos: videosList,
     );
   }
 }
+

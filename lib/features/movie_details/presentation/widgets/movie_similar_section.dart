@@ -57,3 +57,4 @@ class MovieSimilarSection extends StatelessWidget {
     );
   }
 }
+

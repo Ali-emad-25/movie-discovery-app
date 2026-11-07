@@ -23,3 +23,4 @@ final class MovieDetailsError extends MovieDetailsState {
 
   const MovieDetailsError(this.message);
 }
+

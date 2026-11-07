@@ -26,3 +26,4 @@ class CastModel extends Cast {
     };
   }
 }
+

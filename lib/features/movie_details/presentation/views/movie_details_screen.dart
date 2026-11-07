@@ -8,12 +8,14 @@ import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/entities/movie_details.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_cubit.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_state.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/in_app_trailer_player.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_backdrop_header.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_cast_section.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_shimmer_loading.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_info_section.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_overview_section.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_similar_section.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/trailers_section.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
   final int movieId;
@@ -44,84 +46,14 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
 
   void _onPlayTrailer(BuildContext context, MovieDetails movie) {
     if (movie.trailerKey != null && movie.trailerKey!.isNotEmpty) {
-      _showTrailerDialog(context, movie);
+      InAppTrailerPlayer.show(
+        context: context,
+        videoKey: movie.trailerKey!,
+        title: '${movie.title} - Official Trailer',
+      );
     } else {
       showComingSoon(context);
     }
-  }
-
-  void _showTrailerDialog(BuildContext context, MovieDetails movie) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? AppColors.cardDarkColor : AppColors.cardLightColor;
-    final textColor = isDark ? AppColors.textDarkColor : AppColors.textLightColor;
-
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: cardColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          title: Row(
-            children: [
-              const Icon(
-                Icons.play_circle_fill_rounded,
-                color: AppColors.primaryColor,
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  'Trailer: ${movie.title}',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'YouTube Trailer Key:',
-                style: TextStyle(
-                  color: isDark
-                      ? AppColors.secondaryTextDarkColor
-                      : AppColors.secondaryTextLightColor,
-                  fontSize: 12.sp,
-                ),
-              ),
-              SizedBox(height: 6.h),
-              Container(
-                padding: EdgeInsets.all(10.r),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: SelectableText(
-                  'https://www.youtube.com/watch?v=${movie.trailerKey}',
-                  style: TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -225,6 +157,11 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
 
                   SizedBox(height: 24.h),
 
+                  // Trailers & Featurettes (Inline Player & Videos)
+                  TrailersSection(movie: movie),
+
+                  SizedBox(height: 24.h),
+
                   // Top Cast
                   MovieCastSection(cast: movie.cast),
 
@@ -253,3 +190,4 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
     );
   }
 }
+

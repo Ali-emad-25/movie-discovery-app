@@ -23,3 +23,4 @@ class MovieDetailsRemoteDataSourceImpl implements MovieDetailsRemoteDataSource {
     return MovieDetailsModel.fromJson(response.data as Map<String, dynamic>);
   }
 }
+

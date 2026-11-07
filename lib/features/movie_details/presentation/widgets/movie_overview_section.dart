@@ -76,3 +76,4 @@ class _MovieOverviewSectionState extends State<MovieOverviewSection> {
     );
   }
 }
+

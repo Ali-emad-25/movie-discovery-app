@@ -1,6 +1,7 @@
 import 'package:movie_discovery_app/core/network/api_constants.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/entities/cast.dart';
+import 'package:movie_discovery_app/features/movie_details/domain/entities/movie_video.dart';
 
 class MovieDetails {
   final int id;
@@ -17,6 +18,7 @@ class MovieDetails {
   final String? trailerKey;
   final List<Cast> cast;
   final List<Movie> similarMovies;
+  final List<MovieVideo> videos;
 
   const MovieDetails({
     required this.id,
@@ -33,6 +35,7 @@ class MovieDetails {
     this.trailerKey,
     this.cast = const [],
     this.similarMovies = const [],
+    this.videos = const [],
   });
 
   String get posterUrl => posterPath != null && posterPath!.isNotEmpty
