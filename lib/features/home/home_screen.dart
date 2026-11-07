@@ -7,20 +7,32 @@ import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/views/home_view.dart';
 import 'package:movie_discovery_app/features/home/profile_tab/presentation/views/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int initialIndex;
+
+  const HomeScreen({
+    super.key,
+    this.initialIndex = 0,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   late final List<Widget> _screens = [
-    const _PlaceholderScreen(title: 'nav.home', icon: Icons.home_outlined),
+    const HomeView(),
     const _PlaceholderScreen(
       title: 'nav.discover',
       icon: Icons.explore_outlined,

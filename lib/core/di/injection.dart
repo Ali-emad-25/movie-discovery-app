@@ -23,6 +23,13 @@ import 'package:movie_discovery_app/features/auth/presentation/view_models/forgo
 import 'package:movie_discovery_app/features/home/profile_tab/domain/use_cases/profile_use_cases.dart';
 import 'package:movie_discovery_app/features/home/profile_tab/presentation/view_models/profile_cubit.dart';
 
+import 'package:movie_discovery_app/core/network/api_manager.dart';
+import 'package:movie_discovery_app/features/home/home_tab/data/data_sources/home_remote_data_source.dart';
+import 'package:movie_discovery_app/features/home/home_tab/data/repositories/home_repository_impl.dart';
+import 'package:movie_discovery_app/features/home/home_tab/domain/repositories/home_repository.dart';
+import 'package:movie_discovery_app/features/home/home_tab/domain/use_cases/home_use_cases.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_cubit.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
@@ -87,6 +94,37 @@ Future<void> configureDependencies() async {
   getIt.registerFactory<ForgotPasswordCubit>(
     () => ForgotPasswordCubit(
       sendPasswordResetEmailUseCase: getIt<SendPasswordResetEmailUseCase>(),
+    ),
+  );
+
+  // Network
+  getIt.registerLazySingleton<ApiManager>(() => ApiManager());
+
+  // Home Feature
+  getIt.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(getIt<ApiManager>()),
+  );
+  getIt.registerLazySingleton<HomeRepository>(
+    () => HomeRepositoryImpl(getIt<HomeRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<GetTrendingMoviesUseCase>(
+    () => GetTrendingMoviesUseCase(getIt<HomeRepository>()),
+  );
+  getIt.registerLazySingleton<GetPopularMoviesUseCase>(
+    () => GetPopularMoviesUseCase(getIt<HomeRepository>()),
+  );
+  getIt.registerLazySingleton<GetTopRatedMoviesUseCase>(
+    () => GetTopRatedMoviesUseCase(getIt<HomeRepository>()),
+  );
+  getIt.registerLazySingleton<GetNowPlayingMoviesUseCase>(
+    () => GetNowPlayingMoviesUseCase(getIt<HomeRepository>()),
+  );
+  getIt.registerFactory<HomeCubit>(
+    () => HomeCubit(
+      getTrendingMoviesUseCase: getIt<GetTrendingMoviesUseCase>(),
+      getPopularMoviesUseCase: getIt<GetPopularMoviesUseCase>(),
+      getTopRatedMoviesUseCase: getIt<GetTopRatedMoviesUseCase>(),
+      getNowPlayingMoviesUseCase: getIt<GetNowPlayingMoviesUseCase>(),
     ),
   );
 
