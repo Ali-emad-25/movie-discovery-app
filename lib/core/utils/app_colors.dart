@@ -23,7 +23,9 @@ class AppColors {
 
   // Card Colors
   static const cardLightColor = Colors.white;
-  static const cardDarkColor = Color(0xFF1C1F2A);
+  static const cardDarkColor = Color(0xFF151923);
+  static const profileLightColor = Color(0xFFF7F1FF);
+  static const profileDarkColor = Color(0xFF342447);
 
   // Field Colors
   static const fieldLightColor = Colors.white;

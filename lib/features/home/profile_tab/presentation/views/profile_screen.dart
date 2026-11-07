@@ -83,14 +83,31 @@ class _ProfileView extends StatelessWidget {
 
     const avatar = Icon(Icons.person_outline, color: Colors.white, size: 30);
 
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.r),
         gradient: LinearGradient(
-          colors: [colors.surface, colors.surfaceContainerHighest],
+          colors: isDark
+              ? const [Color(0xFF2A124E), Color(0xFF1B1838)]
+              : const [Colors.white, Color(0xFFF7F1FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        border: Border.all(color: theme.dividerColor),
+        border: Border.all(
+          color: isDark
+              ? const Color(0xFF4C2A7D).withValues(alpha: 0.5)
+              : theme.dividerColor,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: isDark ? 0.18 : 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -128,7 +145,9 @@ class _ProfileView extends StatelessWidget {
                             : 'profile.user'.tr()),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: isDark ? Colors.white : null,
+                  ),
                 ),
 
                 SizedBox(height: 4.h),
@@ -142,7 +161,9 @@ class _ProfileView extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.7)
+                        : colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -306,20 +327,13 @@ class _ProfileView extends StatelessWidget {
                 'profile.dark_mode',
                 onTap: state.isSaving
                     ? null
-                    : () => _requireAccount(
-                        context,
-                        user,
-                        () => settings.setDarkMode(!state.settings.isDark),
-                      ),
+                    : () => settings.setDarkMode(!state.settings.isDark),
                 trailing: Switch(
                   value: state.settings.isDark,
+                  activeTrackColor: theme.colorScheme.primary,
                   onChanged: state.isSaving
                       ? null
-                      : (value) => _requireAccount(
-                          context,
-                          user,
-                          () => settings.setDarkMode(value),
-                        ),
+                      : (value) => settings.setDarkMode(value),
                 ),
               ),
 

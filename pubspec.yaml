@@ -44,13 +44,16 @@ dependencies:
   get_it: ^9.3.0
   dio: ^5.11.1
   shared_preferences: ^2.5.6
-  fluttertoast: ^10.0.2
-  flutter_native_splash: ^2.4.8
+  fluttertoast: ^8.2.14
+  flutter_native_splash: ^2.4.4
   google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  meta: 1.17.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

@@ -81,7 +81,7 @@ class AppTheme {
         color: card,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           side: BorderSide(color: border),
         ),
       ),
@@ -134,6 +134,32 @@ class AppTheme {
       ),
 
       dividerColor: divider,
+
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: card,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: AppColors.primaryColor.withValues(alpha: 0.18),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: AppColors.primaryColor);
+          }
+          return IconThemeData(color: secondaryText);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(
+              color: AppColors.primaryColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            );
+          }
+          return TextStyle(
+            color: secondaryText,
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          );
+        }),
+      ),
 
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: card,
