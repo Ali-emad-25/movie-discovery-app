@@ -80,6 +80,39 @@
   "common": {
     "login": "Login",
     "cancel": "Cancel",
-    "coming_soon": "Coming Soon"
+    "coming_soon": "Coming Soon",
+    "retry": "Retry"
+  },
+  "home": {
+    "search_placeholder": "Search movies, actors, directors...",
+    "tabs": {
+      "all": "All",
+      "trending": "Trending",
+      "top_rated": "Top Rated",
+      "popular": "Popular",
+      "popular_people": "Popular People",
+      "now_playing": "Now Playing",
+      "upcoming": "Upcoming"
+    },
+    "sections": {
+      "trending": "Trending",
+      "top_rated": "Top Rated",
+      "popular": "Popular",
+      "popular_people": "Popular People",
+      "now_playing": "Now Playing",
+      "upcoming_releases": "Upcoming Releases"
+    },
+    "featured_premiere": "FEATURED PREMIERE",
+    "watch": "Watch",
+    "see_all": "See All",
+    "coming_soon": "Coming Soon",
+    "remind_me": "Remind me",
+    "movie": "Movie",
+    "tv_show": "TV Show",
+    "quality_4k": "4K HDR",
+    "votes": "votes",
+    "added_to_watchlist": "Added to Watchlist",
+    "removed_from_watchlist": "Removed from Watchlist",
+    "reminder_set": "Reminder set for this release"
   }
 }
