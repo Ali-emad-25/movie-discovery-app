@@ -1,20 +1,24 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
-import 'package:movie_discovery_app/core/widgets/app_toast.dart';
-import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/entities/movie_details.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_cubit.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_state.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/in_app_trailer_player.dart';
-import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_backdrop_header.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_cast_section.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_action_buttons.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_app_bar.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_bento_grid.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_header_block.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_hero.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_segmented_tabs.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_shimmer_loading.dart';
-import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_info_section.dart';
-import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_overview_section.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_similar_section.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_storyline_card.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/trailers_section.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
@@ -42,7 +46,8 @@ class _MovieDetailsView extends StatefulWidget {
 }
 
 class _MovieDetailsViewState extends State<_MovieDetailsView> {
-  bool _isBookmarked = false;
+  int _selectedTabIndex = 0;
+  bool _isFavorite = false;
 
   void _onPlayTrailer(BuildContext context, MovieDetails movie) {
     if (movie.trailerKey != null && movie.trailerKey!.isNotEmpty) {
@@ -52,26 +57,63 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
         title: '${movie.title} - Official Trailer',
       );
     } else {
-      showComingSoon(context);
+      Fluttertoast.showToast(
+        msg: 'movie_details.no_trailers'.tr(),
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: const Color(0xFF171B26),
+        textColor: Colors.white,
+      );
     }
+  }
+
+  void _toggleFavorite() {
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+    Fluttertoast.showToast(
+      msg: _isFavorite
+          ? (context.locale.languageCode == 'ar'
+              ? 'تمت الإضافة إلى المفضلة'
+              : 'Added to Favorites')
+          : (context.locale.languageCode == 'ar'
+              ? 'تمت الإزالة من المفضلة'
+              : 'Removed from Favorites'),
+      toastLength: Toast.LENGTH_SHORT,
+      backgroundColor: const Color(0xFF171B26),
+      textColor: Colors.white,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? AppColors.bgDarkColor : AppColors.bgLightColor;
+    final bgColor = isDark ? const Color(0xFF0F131D) : const Color(0xFFF8FAFC);
     final textColor = isDark ? AppColors.textDarkColor : AppColors.textLightColor;
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: BlocBuilder<MovieDetailsCubit, MovieDetailsState>(
-        builder: (context, state) {
-          if (state is MovieDetailsLoading) {
-            return const MovieDetailsShimmerLoading();
-          }
+    return BlocBuilder<MovieDetailsCubit, MovieDetailsState>(
+      builder: (context, state) {
+        if (state is MovieDetailsLoading) {
+          return Scaffold(
+            backgroundColor: bgColor,
+            body: const MovieDetailsShimmerLoading(),
+          );
+        }
 
-          if (state is MovieDetailsError) {
-            return Center(
+        if (state is MovieDetailsError) {
+          return Scaffold(
+            backgroundColor: bgColor,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_rounded,
+                  color: isDark ? Colors.white : AppColors.textLightColor,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            body: Center(
               child: Padding(
                 padding: EdgeInsets.all(24.r),
                 child: Column(
@@ -95,79 +137,86 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
                     SizedBox(height: 16.h),
                     ElevatedButton(
                       onPressed: () {
-                        final movieId =
-                            (context.findAncestorWidgetOfExactType<MovieDetailsScreen>())
-                                ?.movieId;
+                        final movieId = (context
+                                .findAncestorWidgetOfExactType<MovieDetailsScreen>())
+                            ?.movieId;
                         if (movieId != null) {
                           context
                               .read<MovieDetailsCubit>()
                               .fetchMovieDetails(movieId);
                         }
                       },
-                      child: const Text('Try Again'),
-                    ),
-                    SizedBox(height: 10.h),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Go Back'),
+                      child: Text('common.retry'.tr()),
                     ),
                   ],
                 ),
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          if (state is MovieDetailsLoaded) {
-            final movie = state.movieDetails;
+        if (state is MovieDetailsLoaded) {
+          final movie = state.movieDetails;
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.only(bottom: 30.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Backdrop Hero Header with Back and Bookmark buttons
-                  MovieBackdropHeader(
-                    movie: movie,
-                    isBookmarked: _isBookmarked,
-                    onBack: () => Navigator.pop(context),
-                    onBookmark: () {
-                      setState(() {
-                        _isBookmarked = !_isBookmarked;
-                      });
-                      AppToast.success(
-                        context,
-                        message: _isBookmarked
-                            ? 'Added to your Watchlist'
-                            : 'Removed from Watchlist',
-                      );
-                    },
-                    onPlayTrailer: () => _onPlayTrailer(context, movie),
-                  ),
+          return Scaffold(
+            backgroundColor: bgColor,
+            appBar: MovieDetailsAppBar(
+              movieTitle: movie.title,
+              onBack: () => Navigator.pop(context),
+            ),
+            body: ListView(
+              padding: EdgeInsets.only(bottom: 32.h),
+              children: [
+                // 1. Hero Section with Cinematic Backdrop (16/10)
+                MovieDetailsHero(
+                  movie: movie,
+                  isFavorite: _isFavorite,
+                  onToggleFavorite: _toggleFavorite,
+                  onPlayTrailer: () => _onPlayTrailer(context, movie),
+                ),
 
-                  // Floating Info, Badges, Poster, Genres and Watch Button
-                  MovieInfoSection(
-                    movie: movie,
-                    onWatchTrailer: () => _onPlayTrailer(context, movie),
-                  ),
+                SizedBox(height: 16.h),
 
-                  SizedBox(height: 24.h),
+                // 2. Title & Live Score Header Block
+                MovieDetailsHeaderBlock(movie: movie),
 
-                  // Storyline / Synopsis
-                  MovieOverviewSection(overview: movie.overview),
+                SizedBox(height: 16.h),
 
-                  SizedBox(height: 24.h),
+                // 3. Primary Action Buttons (Add to Watchlist, Watched, Rate)
+                const MovieDetailsActionButtons(),
 
-                  // Trailers & Featurettes (Inline Player & Videos)
-                  TrailersSection(movie: movie),
+                SizedBox(height: 18.h),
 
-                  SizedBox(height: 24.h),
+                // 4. Interactive Segmented Tabs (Overview, Cast, Trailers, Similar)
+                MovieDetailsSegmentedTabs(
+                  selectedIndex: _selectedTabIndex,
+                  onTabSelected: (index) {
+                    setState(() {
+                      _selectedTabIndex = index;
+                    });
+                  },
+                ),
 
-                  // Top Cast
+                SizedBox(height: 20.h),
+
+                // 5. Tab Content
+                if (_selectedTabIndex == 0) ...[
+                  // Overview Tab Content
+                  MovieStorylineCard(overview: movie.overview),
+                  SizedBox(height: 20.h),
                   MovieCastSection(cast: movie.cast),
-
-                  SizedBox(height: 24.h),
-
-                  // Similar Movies (More Like This)
+                  SizedBox(height: 20.h),
+                  TrailersSection(movie: movie),
+                  SizedBox(height: 20.h),
+                  MovieDetailsBentoGrid(movie: movie),
+                ] else if (_selectedTabIndex == 1) ...[
+                  // Cast Tab Content
+                  MovieCastSection(cast: movie.cast),
+                ] else if (_selectedTabIndex == 2) ...[
+                  // Trailers Tab Content
+                  TrailersSection(movie: movie),
+                ] else if (_selectedTabIndex == 3) ...[
+                  // Similar Movies Tab Content
                   MovieSimilarSection(
                     movies: movie.similarMovies,
                     onMovieTap: (similar) {
@@ -180,14 +229,13 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
                     },
                   ),
                 ],
-              ),
-            );
-          }
+              ],
+            ),
+          );
+        }
 
-          return const SizedBox.shrink();
-        },
-      ),
+        return const SizedBox.shrink();
+      },
     );
   }
 }
-

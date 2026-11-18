@@ -20,6 +20,11 @@ class MovieDetailsModel extends MovieDetails {
     super.cast = const [],
     super.similarMovies = const [],
     super.videos = const [],
+    super.budget = 0,
+    super.revenue = 0,
+    super.director = '',
+    super.musicComposer = '',
+    super.collectionName,
   });
 
   factory MovieDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -30,15 +35,42 @@ class MovieDetailsModel extends MovieDetails {
             .toList() ??
         const [];
 
-    // Parse cast
-    final castJson = json['credits'] != null
-        ? (json['credits'] as Map<String, dynamic>)['cast'] as List<dynamic>?
+    // Parse cast and crew
+    final creditsJson = json['credits'] as Map<String, dynamic>?;
+    final castJson = creditsJson != null
+        ? creditsJson['cast'] as List<dynamic>?
         : null;
     final castList = castJson
             ?.take(15)
             .map((c) => CastModel.fromJson(c as Map<String, dynamic>))
             .toList() ??
         const [];
+
+    String director = '';
+    String musicComposer = '';
+    final crewJson = creditsJson != null
+        ? creditsJson['crew'] as List<dynamic>?
+        : null;
+    if (crewJson != null) {
+      for (final member in crewJson) {
+        final m = member as Map<String, dynamic>;
+        final job = m['job'] as String? ?? '';
+        final name = m['name'] as String? ?? '';
+        if (job == 'Director' && director.isEmpty) {
+          director = name;
+        } else if ((job == 'Original Music Composer' || job == 'Music') &&
+            musicComposer.isEmpty) {
+          musicComposer = name;
+        }
+      }
+    }
+
+    // Parse collection
+    String? collectionName;
+    if (json['belongs_to_collection'] != null) {
+      collectionName = (json['belongs_to_collection']
+          as Map<String, dynamic>)['name'] as String?;
+    }
 
     // Parse similar movies
     final similarJson = json['similar'] != null
@@ -49,14 +81,14 @@ class MovieDetailsModel extends MovieDetails {
             .toList() ??
         const [];
 
-    // Parse official trailers only
+    // Parse official trailers
     final List<MovieVideoModel> videosList = [];
     String? trailerKey;
     final videosJson = json['videos'] != null
         ? (json['videos'] as Map<String, dynamic>)['results'] as List<dynamic>?
         : null;
     if (videosJson != null && videosJson.isNotEmpty) {
-      // 1. First priority: Official YouTube Trailers
+      // 1. Official YouTube Trailers
       for (final v in videosJson) {
         final videoMap = v as Map<String, dynamic>;
         final site = videoMap['site'] as String?;
@@ -67,7 +99,7 @@ class MovieDetailsModel extends MovieDetails {
         }
       }
 
-      // 2. Fallback: Any YouTube Trailer if no official ones found
+      // 2. Fallback: Any YouTube Trailer
       if (videosList.isEmpty) {
         for (final v in videosJson) {
           final videoMap = v as Map<String, dynamic>;
@@ -79,7 +111,7 @@ class MovieDetailsModel extends MovieDetails {
         }
       }
 
-      // 3. Fallback: Official Teasers if still empty
+      // 3. Fallback: Teasers
       if (videosList.isEmpty) {
         for (final v in videosJson) {
           final videoMap = v as Map<String, dynamic>;
@@ -110,7 +142,11 @@ class MovieDetailsModel extends MovieDetails {
       cast: castList,
       similarMovies: similarList,
       videos: videosList,
+      budget: json['budget'] as int? ?? 0,
+      revenue: json['revenue'] as int? ?? 0,
+      director: director,
+      musicComposer: musicComposer,
+      collectionName: collectionName,
     );
   }
 }
-

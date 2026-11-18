@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
@@ -27,23 +28,22 @@ class MovieSimilarSection extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Text(
-            'More Like This',
+            'movie_details.similar_movies'.tr(),
             style: TextStyle(
               color: textColor,
-              fontSize: 17.sp,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.3,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
         SizedBox(height: 12.h),
         SizedBox(
-          height: 230.h,
+          height: 235.h,
           child: ListView.separated(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             scrollDirection: Axis.horizontal,
             itemCount: movies.length,
-            separatorBuilder: (_, _) => SizedBox(width: 14.w),
+            separatorBuilder: (_, _) => SizedBox(width: 12.w),
             itemBuilder: (context, index) {
               final movie = movies[index];
               return MovieCard(
@@ -57,4 +57,3 @@ class MovieSimilarSection extends StatelessWidget {
     );
   }
 }
-

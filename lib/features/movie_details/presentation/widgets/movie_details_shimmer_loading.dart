@@ -49,122 +49,94 @@ class _MovieDetailsShimmerLoadingState extends State<MovieDetailsShimmerLoading>
           padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            // Backdrop Shimmer
-            Container(
-              height: 280.h,
-              color: shimmerColor,
+            // Hero Shimmer (16/10)
+            AspectRatio(
+              aspectRatio: 16 / 10,
+              child: Container(
+                color: shimmerColor,
+              ),
             ),
             SizedBox(height: 16.h),
 
-            // Poster & Details Shimmer
+            // Title & Score Shimmer
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 200.w,
+                        height: 24.h,
+                        decoration: BoxDecoration(
+                          color: shimmerColor,
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Container(
+                        width: 120.w,
+                        height: 14.h,
+                        decoration: BoxDecoration(
+                          color: shimmerColor,
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                      ),
+                    ],
+                  ),
                   Container(
-                    width: 105.w,
-                    height: 155.h,
+                    width: 70.w,
+                    height: 32.h,
                     decoration: BoxDecoration(
                       color: shimmerColor,
-                      borderRadius: BorderRadius.circular(16.r),
-                    ),
-                  ),
-                  SizedBox(width: 16.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 22.h,
-                          decoration: BoxDecoration(
-                            color: shimmerColor,
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                        ),
-                        SizedBox(height: 10.h),
-                        Container(
-                          width: 120.w,
-                          height: 14.h,
-                          decoration: BoxDecoration(
-                            color: shimmerColor,
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                        ),
-                        SizedBox(height: 14.h),
-                        Container(
-                          width: 80.w,
-                          height: 24.h,
-                          decoration: BoxDecoration(
-                            color: shimmerColor,
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(9999.r),
                     ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: 24.h),
+            SizedBox(height: 16.h),
 
-            // Button Shimmer
+            // Action Buttons Shimmer
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: Container(
                 height: 48.h,
                 decoration: BoxDecoration(
                   color: shimmerColor,
-                  borderRadius: BorderRadius.circular(24.r),
+                  borderRadius: BorderRadius.circular(9999.r),
                 ),
               ),
             ),
 
-            SizedBox(height: 24.h),
+            SizedBox(height: 18.h),
 
-            // Storyline Shimmer
+            // Segmented Tabs Shimmer
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 100.w,
-                    height: 18.h,
-                    decoration: BoxDecoration(
-                      color: shimmerColor,
-                      borderRadius: BorderRadius.circular(6.r),
-                    ),
-                  ),
-                  SizedBox(height: 10.h),
-                  Container(
-                    width: double.infinity,
-                    height: 14.h,
-                    decoration: BoxDecoration(
-                      color: shimmerColor,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Container(
-                    width: double.infinity,
-                    height: 14.h,
-                    decoration: BoxDecoration(
-                      color: shimmerColor,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Container(
-                    width: 200.w,
-                    height: 14.h,
-                    decoration: BoxDecoration(
-                      color: shimmerColor,
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                  ),
-                ],
+              child: Container(
+                height: 40.h,
+                decoration: BoxDecoration(
+                  color: shimmerColor,
+                  borderRadius: BorderRadius.circular(9999.r),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 20.h),
+
+            // Storyline Card Shimmer
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Container(
+                height: 120.h,
+                decoration: BoxDecoration(
+                  color: shimmerColor,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
               ),
             ),
           ],
@@ -173,4 +145,3 @@ class _MovieDetailsShimmerLoadingState extends State<MovieDetailsShimmerLoading>
     );
   }
 }
-

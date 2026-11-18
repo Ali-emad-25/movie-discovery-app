@@ -112,6 +112,42 @@
     "added_to_watchlist": "تمت الإضافة إلى قائمة المشاهدة",
     "removed_from_watchlist": "تمت الإزالة من قائمة المشاهدة",
     "reminder_set": "تم ضبط تذكير لهذا العمل"
+  },
+  "movie_details": {
+    "title": "تفاصيل العمل",
+    "in_cinemas": "في السينما و IMAX",
+    "quality_4k": "4K Ultra HD",
+    "add_to_watchlist": "إضافة للمشاهدة",
+    "in_watchlist": "في القائمة",
+    "watched": "تمت المشاهدة",
+    "rate": "تقييم",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "cast": "الممثلين",
+      "trailers": "الإعلانات",
+      "similar": "أعمال مشابهة"
+    },
+    "storyline": "القصة",
+    "read_more": "قراءة المزيد",
+    "show_less": "عرض أقل",
+    "top_cast": "أبرز الممثلين",
+    "view_all": "عرض الكل",
+    "trailers_and_featurettes": "الإعلانات الترويجية",
+    "videos_count": "{} فيديوهات",
+    "movie_details": "بيانات العمل",
+    "director": "المخرج",
+    "box_office": "شباك التذاكر",
+    "budget": "الميزانية",
+    "original_music": "الموسيقى",
+    "similar_movies": "أعمال مشابهة",
+    "no_trailers": "لا توجد إعلانات رسمية متوفرة",
+    "no_overview": "لا يوجد ملخص متوفر لهذا الفيلم حالياً.",
+    "no_cast": "لا توجد معلومات متوفرة عن طاقم العمل",
+    "no_similar": "لا توجد أعمال مشابهة حالياً",
+    "added_to_watchlist": "تمت الإضافة إلى قائمة المشاهدة",
+    "removed_from_watchlist": "تمت الإزالة من قائمة المشاهدة",
+    "marked_watched": "تم التحديد كمشاهد",
+    "unmarked_watched": "تمت الإزالة من المشاهدات"
   }
 }
 

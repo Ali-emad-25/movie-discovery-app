@@ -19,6 +19,11 @@ class MovieDetails {
   final List<Cast> cast;
   final List<Movie> similarMovies;
   final List<MovieVideo> videos;
+  final int budget;
+  final int revenue;
+  final String director;
+  final String musicComposer;
+  final String? collectionName;
 
   const MovieDetails({
     required this.id,
@@ -36,6 +41,11 @@ class MovieDetails {
     this.cast = const [],
     this.similarMovies = const [],
     this.videos = const [],
+    this.budget = 0,
+    this.revenue = 0,
+    this.director = '',
+    this.musicComposer = '',
+    this.collectionName,
   });
 
   String get posterUrl => posterPath != null && posterPath!.isNotEmpty
@@ -51,12 +61,38 @@ class MovieDetails {
 
   String get ratingFormatted => voteAverage.toStringAsFixed(1);
 
-  String get formattedRuntime {
+  String formattedRuntime([String languageCode = 'en']) {
     if (runtime <= 0) return '';
     final hours = runtime ~/ 60;
     final minutes = runtime % 60;
+    if (languageCode == 'ar') {
+      if (hours == 0) return '$minutes د';
+      if (minutes == 0) return '$hours س';
+      return '$hours س $minutes د';
+    }
     if (hours == 0) return '${minutes}m';
     if (minutes == 0) return '${hours}h';
     return '${hours}h ${minutes}m';
+  }
+
+  String get runtimeFormatted => formattedRuntime('en');
+
+  String formattedCurrency(int amount, String languageCode) {
+    if (amount <= 0) {
+      return languageCode == 'ar' ? 'غير متوفر' : 'N/A';
+    }
+    if (amount >= 1000000000) {
+      final val = (amount / 1000000000).toStringAsFixed(1);
+      return languageCode == 'ar' ? '\$$val مليار' : '\$$val Billion';
+    }
+    if (amount >= 1000000) {
+      final val = (amount / 1000000).toStringAsFixed(1);
+      return languageCode == 'ar' ? '\$$val مليون' : '\$$val Million';
+    }
+    if (amount >= 1000) {
+      final val = (amount / 1000).toStringAsFixed(0);
+      return languageCode == 'ar' ? '\$$val ألف' : '\$$val K';
+    }
+    return '\$$amount';
   }
 }

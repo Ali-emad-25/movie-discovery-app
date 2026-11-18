@@ -114,5 +114,41 @@
     "added_to_watchlist": "Added to Watchlist",
     "removed_from_watchlist": "Removed from Watchlist",
     "reminder_set": "Reminder set for this release"
+  },
+  "movie_details": {
+    "title": "Media Details",
+    "in_cinemas": "IN CINEMAS & IMAX",
+    "quality_4k": "4K Ultra HD",
+    "add_to_watchlist": "Add to Watchlist",
+    "in_watchlist": "In Watchlist",
+    "watched": "Watched",
+    "rate": "Rate",
+    "tabs": {
+      "overview": "Overview",
+      "cast": "Cast",
+      "trailers": "Trailers",
+      "similar": "Similar"
+    },
+    "storyline": "Storyline",
+    "read_more": "Read More",
+    "show_less": "Show Less",
+    "top_cast": "Top Cast",
+    "view_all": "View All",
+    "trailers_and_featurettes": "Trailers & Featurettes",
+    "videos_count": "{} Videos",
+    "movie_details": "Movie Details",
+    "director": "DIRECTOR",
+    "box_office": "BOX OFFICE",
+    "budget": "BUDGET",
+    "original_music": "ORIGINAL MUSIC",
+    "similar_movies": "Similar Movies",
+    "no_trailers": "No official trailers available",
+    "no_overview": "No overview available for this movie.",
+    "no_cast": "No cast information available",
+    "no_similar": "No similar movies found",
+    "added_to_watchlist": "Added to your Watchlist",
+    "removed_from_watchlist": "Removed from Watchlist",
+    "marked_watched": "Marked as Watched",
+    "unmarked_watched": "Removed from Watched"
   }
 }

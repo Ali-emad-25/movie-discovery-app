@@ -20,6 +20,8 @@ class MovieVideo {
   String get youtubeThumbnailUrl =>
       'https://img.youtube.com/vi/$key/hqdefault.jpg';
 
+  String get thumbnailUrl => youtubeThumbnailUrl;
+
   String get youtubeVideoUrl => 'https://www.youtube.com/watch?v=$key';
 }
 

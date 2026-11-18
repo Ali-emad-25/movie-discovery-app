@@ -117,7 +117,11 @@ class _HomeViewBody extends StatelessWidget {
                         _showMovieDetails(context, state.featuredMovie!);
                       }
                     },
-                    onWatch: () => showComingSoon(context),
+                    onWatch: () {
+                      if (state.featuredMovie != null) {
+                        _showMovieDetails(context, state.featuredMovie!);
+                      }
+                    },
                   ),
                   SizedBox(height: 22.h),
                 ],
