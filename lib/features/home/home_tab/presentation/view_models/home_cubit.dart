@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery_app/core/network/api_result.dart';
+import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
+import 'package:movie_discovery_app/features/home/home_tab/domain/entities/person.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/use_cases/home_use_cases.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_state.dart';
 
@@ -8,12 +10,16 @@ class HomeCubit extends Cubit<HomeState> {
   final GetPopularMoviesUseCase getPopularMoviesUseCase;
   final GetTopRatedMoviesUseCase getTopRatedMoviesUseCase;
   final GetNowPlayingMoviesUseCase getNowPlayingMoviesUseCase;
+  final GetUpcomingMoviesUseCase getUpcomingMoviesUseCase;
+  final GetPopularPeopleUseCase getPopularPeopleUseCase;
 
   HomeCubit({
     required this.getTrendingMoviesUseCase,
     required this.getPopularMoviesUseCase,
     required this.getTopRatedMoviesUseCase,
     required this.getNowPlayingMoviesUseCase,
+    required this.getUpcomingMoviesUseCase,
+    required this.getPopularPeopleUseCase,
   }) : super(const HomeInitial());
 
   Future<void> fetchHomeData() async {
@@ -24,23 +30,31 @@ class HomeCubit extends Cubit<HomeState> {
       getPopularMoviesUseCase(),
       getTopRatedMoviesUseCase(),
       getNowPlayingMoviesUseCase(),
+      getUpcomingMoviesUseCase(),
+      getPopularPeopleUseCase(),
     ]);
 
-    final trendingRes = results[0];
-    final popularRes = results[1];
-    final topRatedRes = results[2];
-    final nowPlayingRes = results[3];
+    final trendingRes = results[0] as ApiResult<List<Movie>>;
+    final popularRes = results[1] as ApiResult<List<Movie>>;
+    final topRatedRes = results[2] as ApiResult<List<Movie>>;
+    final nowPlayingRes = results[3] as ApiResult<List<Movie>>;
+    final upcomingRes = results[4] as ApiResult<List<Movie>>;
+    final popularPeopleRes = results[5] as ApiResult<List<Person>>;
 
-    if (trendingRes is ApiSuccess &&
-        popularRes is ApiSuccess &&
-        topRatedRes is ApiSuccess &&
-        nowPlayingRes is ApiSuccess) {
+    if (trendingRes is ApiSuccess<List<Movie>> &&
+        popularRes is ApiSuccess<List<Movie>> &&
+        topRatedRes is ApiSuccess<List<Movie>> &&
+        nowPlayingRes is ApiSuccess<List<Movie>> &&
+        upcomingRes is ApiSuccess<List<Movie>> &&
+        popularPeopleRes is ApiSuccess<List<Person>>) {
       emit(
         HomeLoaded(
-          trendingMovies: (trendingRes as ApiSuccess).data,
-          popularMovies: (popularRes as ApiSuccess).data,
-          topRatedMovies: (topRatedRes as ApiSuccess).data,
-          nowPlayingMovies: (nowPlayingRes as ApiSuccess).data,
+          trendingMovies: trendingRes.data,
+          popularMovies: popularRes.data,
+          topRatedMovies: topRatedRes.data,
+          nowPlayingMovies: nowPlayingRes.data,
+          upcomingMovies: upcomingRes.data,
+          popularPeople: popularPeopleRes.data,
         ),
       );
     } else {
@@ -55,11 +69,10 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void selectGenre(int index) {
+  void setFilterIndex(int index) {
     if (state is HomeLoaded) {
       final current = state as HomeLoaded;
-      emit(current.copyWith(selectedGenreIndex: index));
+      emit(current.copyWith(selectedFilterIndex: index));
     }
   }
 }
-

@@ -7,11 +7,16 @@ import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
+import 'package:movie_discovery_app/features/home/home_tab/domain/entities/person.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_cubit.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_state.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/featured_hero_card.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/home_filter_tabs.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/home_shimmer_loading.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/movies_horizontal_section.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/popular_people_section.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/top_rated_section.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/upcoming_releases_section.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -36,14 +41,14 @@ class _HomeViewBody extends StatelessWidget {
     );
   }
 
+  void _showPersonDetails(BuildContext context, Person person) {
+    showComingSoon(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? AppColors.textDarkColor : AppColors.textLightColor;
-    final secondaryColor =
-        isDark ? AppColors.secondaryTextDarkColor : AppColors.secondaryTextLightColor;
-    final cardColor = isDark ? AppColors.cardDarkColor : AppColors.cardLightColor;
-    final borderColor = isDark ? AppColors.borderDarkColor : AppColors.borderLightColor;
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
@@ -85,104 +90,103 @@ class _HomeViewBody extends StatelessWidget {
         }
 
         if (state is HomeLoaded) {
+          final filterIndex = state.selectedFilterIndex;
+
           return RefreshIndicator(
             color: AppColors.primaryColor,
             onRefresh: () => context.read<HomeCubit>().fetchHomeData(),
             child: ListView(
-              padding: EdgeInsets.symmetric(vertical: 14.h),
+              padding: EdgeInsets.symmetric(vertical: 12.h),
               children: [
-                // Search Mock Bar (Matches Figma)
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(24.r),
-                    onTap: () => showComingSoon(context),
-                    child: Container(
-                      height: 46.h,
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(24.r),
-                        border: Border.all(color: borderColor),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.search_rounded,
-                            color: secondaryColor,
-                            size: 20.sp,
-                          ),
-                          SizedBox(width: 10.w),
-                          Text(
-                            'Search movies, actors, directors...',
-                            style: TextStyle(
-                              color: secondaryColor,
-                              fontSize: 12.5.sp,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                // Filter Tabs (Category Pills Rail)
+                HomeFilterTabs(
+                  selectedIndex: filterIndex,
+                  onSelectTab: (index) {
+                    context.read<HomeCubit>().setFilterIndex(index);
+                  },
                 ),
 
-                SizedBox(height: 18.h),
+                SizedBox(height: 14.h),
 
-                // Featured Hero Banner
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: FeaturedHeroCard(
+                // Featured Hero Banner (Shown on All or Now Playing)
+                if (filterIndex == 0 || filterIndex == 5) ...[
+                  FeaturedHeroCard(
                     movie: state.featuredMovie,
                     onDetails: () {
                       if (state.featuredMovie != null) {
                         _showMovieDetails(context, state.featuredMovie!);
                       }
                     },
-                    onWatchTrailer: () => showComingSoon(context),
+                    onWatch: () => showComingSoon(context),
                   ),
-                ),
+                  SizedBox(height: 22.h),
+                ],
 
-                SizedBox(height: 24.h),
+                // 1. Trending Section (All or Trending tab)
+                if (filterIndex == 0 || filterIndex == 1) ...[
+                  MoviesHorizontalSection(
+                    title: 'home.sections.trending'.tr(),
+                    accentColor: const Color(0xFFF59E0B), // Amber accent
+                    movies: state.trendingMovies,
+                    onSeeAll: () => showComingSoon(context),
+                    onMovieTap: (movie) => _showMovieDetails(context, movie),
+                  ),
+                  SizedBox(height: 22.h),
+                ],
 
-                // Trending Section
-                MoviesHorizontalSection(
-                  title: 'Trending Today',
-                  movies: state.trendingMovies,
-                  onSeeAll: () => showComingSoon(context),
-                  onMovieTap: (movie) => _showMovieDetails(context, movie),
-                ),
+                // 2. Top Rated Section (All or Top Rated tab)
+                if (filterIndex == 0 || filterIndex == 2) ...[
+                  TopRatedSection(
+                    movies: state.topRatedMovies,
+                    maxItems: filterIndex == 2 ? state.topRatedMovies.length : 3,
+                    onSeeAll: () => showComingSoon(context),
+                    onMovieTap: (movie) => _showMovieDetails(context, movie),
+                  ),
+                  SizedBox(height: 22.h),
+                ],
 
-                SizedBox(height: 24.h),
+                // 3. Popular Section (All or Popular tab)
+                if (filterIndex == 0 || filterIndex == 3) ...[
+                  MoviesHorizontalSection(
+                    title: 'home.sections.popular'.tr(),
+                    accentColor: const Color(0xFF7C3AED), // Purple accent
+                    movies: state.popularMovies,
+                    onSeeAll: () => showComingSoon(context),
+                    onMovieTap: (movie) => _showMovieDetails(context, movie),
+                  ),
+                  SizedBox(height: 22.h),
+                ],
 
-                // Popular Section
-                MoviesHorizontalSection(
-                  title: 'Popular on MovieVerse',
-                  movies: state.popularMovies,
-                  onSeeAll: () => showComingSoon(context),
-                  onMovieTap: (movie) => _showMovieDetails(context, movie),
-                ),
+                // 4. Popular People Section (All or Popular People tab)
+                if (filterIndex == 0 || filterIndex == 4) ...[
+                  PopularPeopleSection(
+                    people: state.popularPeople,
+                    onSeeAll: () => showComingSoon(context),
+                    onPersonTap: (person) => _showPersonDetails(context, person),
+                  ),
+                  SizedBox(height: 22.h),
+                ],
 
-                SizedBox(height: 24.h),
+                // 5. Now Playing Section (All or Now Playing tab)
+                if (filterIndex == 0 || filterIndex == 5) ...[
+                  MoviesHorizontalSection(
+                    title: 'home.sections.now_playing'.tr(),
+                    accentColor: const Color(0xFF34C759), // Green accent
+                    movies: state.nowPlayingMovies,
+                    onSeeAll: () => showComingSoon(context),
+                    onMovieTap: (movie) => _showMovieDetails(context, movie),
+                  ),
+                  SizedBox(height: 22.h),
+                ],
 
-                // Top Rated Section
-                MoviesHorizontalSection(
-                  title: 'Top Rated Classics',
-                  movies: state.topRatedMovies,
-                  onSeeAll: () => showComingSoon(context),
-                  onMovieTap: (movie) => _showMovieDetails(context, movie),
-                ),
-
-                SizedBox(height: 24.h),
-
-                // Now Playing in Theaters
-                MoviesHorizontalSection(
-                  title: 'Now in Theaters',
-                  movies: state.nowPlayingMovies,
-                  onSeeAll: () => showComingSoon(context),
-                  onMovieTap: (movie) => _showMovieDetails(context, movie),
-                ),
-
-                SizedBox(height: 16.h),
+                // 6. Upcoming Releases Section (All or Upcoming tab)
+                if (filterIndex == 0 || filterIndex == 6) ...[
+                  UpcomingReleasesSection(
+                    movies: state.upcomingMovies,
+                    onMovieTap: (movie) => _showMovieDetails(context, movie),
+                  ),
+                  SizedBox(height: 16.h),
+                ],
               ],
             ),
           );
@@ -193,4 +197,3 @@ class _HomeViewBody extends StatelessWidget {
     );
   }
 }
-

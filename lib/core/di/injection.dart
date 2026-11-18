@@ -124,12 +124,20 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<GetNowPlayingMoviesUseCase>(
     () => GetNowPlayingMoviesUseCase(getIt<HomeRepository>()),
   );
+  getIt.registerLazySingleton<GetUpcomingMoviesUseCase>(
+    () => GetUpcomingMoviesUseCase(getIt<HomeRepository>()),
+  );
+  getIt.registerLazySingleton<GetPopularPeopleUseCase>(
+    () => GetPopularPeopleUseCase(getIt<HomeRepository>()),
+  );
   getIt.registerFactory<HomeCubit>(
     () => HomeCubit(
       getTrendingMoviesUseCase: getIt<GetTrendingMoviesUseCase>(),
       getPopularMoviesUseCase: getIt<GetPopularMoviesUseCase>(),
       getTopRatedMoviesUseCase: getIt<GetTopRatedMoviesUseCase>(),
       getNowPlayingMoviesUseCase: getIt<GetNowPlayingMoviesUseCase>(),
+      getUpcomingMoviesUseCase: getIt<GetUpcomingMoviesUseCase>(),
+      getPopularPeopleUseCase: getIt<GetPopularPeopleUseCase>(),
     ),
   );
 

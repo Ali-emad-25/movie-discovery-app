@@ -78,7 +78,40 @@
   "common": {
     "login": "تسجيل الدخول",
     "cancel": "إلغاء",
-    "coming_soon": "قريباً"
+    "coming_soon": "قريباً",
+    "retry": "إعادة المحاولة"
+  },
+  "home": {
+    "search_placeholder": "ابحث عن أفلام، ممثلين، مخرجين...",
+    "tabs": {
+      "all": "الكل",
+      "trending": "الأكثر رواجاً",
+      "top_rated": "الأعلى تقييماً",
+      "popular": "الشائع",
+      "popular_people": "أشهر الفنانين",
+      "now_playing": "يُعرض الآن",
+      "upcoming": "قريباً"
+    },
+    "sections": {
+      "trending": "الأكثر رواجاً",
+      "top_rated": "الأعلى تقييماً",
+      "popular": "الشائع",
+      "popular_people": "أشهر الفنانين",
+      "now_playing": "يُعرض الآن",
+      "upcoming_releases": "إصدارات قادمة"
+    },
+    "featured_premiere": "العرض المميز",
+    "watch": "مشاهدة",
+    "see_all": "عرض الكل",
+    "coming_soon": "قريباً",
+    "remind_me": "ذكرني",
+    "movie": "فيلم",
+    "tv_show": "مسلسل",
+    "quality_4k": "4K HDR",
+    "votes": "صوت",
+    "added_to_watchlist": "تمت الإضافة إلى قائمة المشاهدة",
+    "removed_from_watchlist": "تمت الإزالة من قائمة المشاهدة",
+    "reminder_set": "تم ضبط تذكير لهذا العمل"
   }
 }
 
