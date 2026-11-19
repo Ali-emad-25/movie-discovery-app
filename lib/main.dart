@@ -16,6 +16,7 @@ import 'package:movie_discovery_app/features/auth/presentation/views/register_sc
 
 import 'package:movie_discovery_app/features/home/home_screen.dart';
 import 'package:movie_discovery_app/features/home/profile_tab/presentation/views/profile_screen.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/views/movie_details_screen.dart';
 import 'package:movie_discovery_app/features/splash/presentation/veiws/splash_screen.dart';
 
 import 'package:movie_discovery_app/firebase_options.dart';
@@ -132,6 +133,12 @@ class _MyAppState extends State<MyApp> {
 
                   AppRoutes.profileScreenRouteName: (context) =>
                       const ProfileScreen(),
+
+                  AppRoutes.movieDetailsRouteName: (context) {
+                    final args = ModalRoute.of(context)?.settings.arguments;
+                    final movieId = args is int ? args : 0;
+                    return MovieDetailsScreen(movieId: movieId);
+                  },
                 },
               );
             },

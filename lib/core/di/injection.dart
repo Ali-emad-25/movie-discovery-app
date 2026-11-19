@@ -34,6 +34,11 @@ import 'package:movie_discovery_app/features/search/data/repositories/search_rep
 import 'package:movie_discovery_app/features/search/domain/repositories/search_repository.dart';
 import 'package:movie_discovery_app/features/search/domain/use_cases/search_use_case.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_cubit.dart';
+import 'package:movie_discovery_app/features/movie_details/data/data_sources/movie_details_remote_data_source.dart';
+import 'package:movie_discovery_app/features/movie_details/data/repositories/movie_details_repository_impl.dart';
+import 'package:movie_discovery_app/features/movie_details/domain/repositories/movie_details_repository.dart';
+import 'package:movie_discovery_app/features/movie_details/domain/use_cases/get_movie_details_use_case.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -155,6 +160,19 @@ Future<void> configureDependencies() async {
     () => SearchCubit(
       searchUseCase: getIt<SearchUseCase>(),
       firebaseAuth: getIt<FirebaseAuth>(),
+  // Movie Details Feature
+  getIt.registerLazySingleton<MovieDetailsRemoteDataSource>(
+    () => MovieDetailsRemoteDataSourceImpl(getIt<ApiManager>()),
+  );
+  getIt.registerLazySingleton<MovieDetailsRepository>(
+    () => MovieDetailsRepositoryImpl(getIt<MovieDetailsRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<GetMovieDetailsUseCase>(
+    () => GetMovieDetailsUseCase(getIt<MovieDetailsRepository>()),
+  );
+  getIt.registerFactory<MovieDetailsCubit>(
+    () => MovieDetailsCubit(
+      getMovieDetailsUseCase: getIt<GetMovieDetailsUseCase>(),
     ),
   );
 

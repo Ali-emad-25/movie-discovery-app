@@ -5,4 +5,5 @@ class AppRoutes {
   static const String homeScreenRouteName = 'home_screen';
   static const String profileScreenRouteName = 'profile_screen';
   static const String splashScreenRouteName = 'splash_screen';
+  static const String movieDetailsRouteName = 'movie_details_screen';
 }
