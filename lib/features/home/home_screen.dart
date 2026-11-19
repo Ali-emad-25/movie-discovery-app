@@ -9,14 +9,12 @@ import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/views/home_view.dart';
 import 'package:movie_discovery_app/features/home/profile_tab/presentation/views/profile_screen.dart';
+import 'package:movie_discovery_app/features/search/presentation/views/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
 
-  const HomeScreen({
-    super.key,
-    this.initialIndex = 0,
-  });
+  const HomeScreen({super.key, this.initialIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -72,7 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
         actionsPadding: EdgeInsets.symmetric(horizontal: 16.w),
         actions: [
           InkWell(
-            onTap: () => showComingSoon(context),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const SearchScreen()),
+            ),
             child: Icon(Icons.search, size: 25.sp),
           ),
           SizedBox(width: 15.w),

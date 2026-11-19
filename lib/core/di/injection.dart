@@ -29,6 +29,11 @@ import 'package:movie_discovery_app/features/home/home_tab/data/repositories/hom
 import 'package:movie_discovery_app/features/home/home_tab/domain/repositories/home_repository.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/use_cases/home_use_cases.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_cubit.dart';
+import 'package:movie_discovery_app/features/search/data/data_sources/search_remote_data_source.dart';
+import 'package:movie_discovery_app/features/search/data/repositories/search_repository_impl.dart';
+import 'package:movie_discovery_app/features/search/domain/repositories/search_repository.dart';
+import 'package:movie_discovery_app/features/search/domain/use_cases/search_use_case.dart';
+import 'package:movie_discovery_app/features/search/presentation/view_models/search_cubit.dart';
 import 'package:movie_discovery_app/features/movie_details/data/data_sources/movie_details_remote_data_source.dart';
 import 'package:movie_discovery_app/features/movie_details/data/repositories/movie_details_repository_impl.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/repositories/movie_details_repository.dart';
@@ -141,6 +146,20 @@ Future<void> configureDependencies() async {
     ),
   );
 
+  // Search Feature
+  getIt.registerLazySingleton<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(getIt<ApiManager>()),
+  );
+  getIt.registerLazySingleton<SearchRepository>(
+    () => SearchRepositoryImpl(getIt<SearchRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<SearchUseCase>(
+    () => SearchUseCase(getIt<SearchRepository>()),
+  );
+  getIt.registerFactory<SearchCubit>(
+    () => SearchCubit(
+      searchUseCase: getIt<SearchUseCase>(),
+      firebaseAuth: getIt<FirebaseAuth>(),
   // Movie Details Feature
   getIt.registerLazySingleton<MovieDetailsRemoteDataSource>(
     () => MovieDetailsRemoteDataSourceImpl(getIt<ApiManager>()),
