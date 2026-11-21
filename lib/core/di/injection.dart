@@ -34,6 +34,11 @@ import 'package:movie_discovery_app/features/search/data/repositories/search_rep
 import 'package:movie_discovery_app/features/search/domain/repositories/search_repository.dart';
 import 'package:movie_discovery_app/features/search/domain/use_cases/search_use_case.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_cubit.dart';
+import 'package:movie_discovery_app/features/cast_details/data/data_sources/cast_details_remote_data_source.dart';
+import 'package:movie_discovery_app/features/cast_details/data/repositories/cast_details_repository_impl.dart';
+import 'package:movie_discovery_app/features/cast_details/domain/repositories/cast_details_repository.dart';
+import 'package:movie_discovery_app/features/cast_details/domain/use_cases/get_cast_details_use_case.dart';
+import 'package:movie_discovery_app/features/cast_details/presentation/view_models/cast_details_cubit.dart';
 import 'package:movie_discovery_app/features/movie_details/data/data_sources/movie_details_remote_data_source.dart';
 import 'package:movie_discovery_app/features/movie_details/data/repositories/movie_details_repository_impl.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/repositories/movie_details_repository.dart';
@@ -160,6 +165,8 @@ Future<void> configureDependencies() async {
     () => SearchCubit(
       searchUseCase: getIt<SearchUseCase>(),
       firebaseAuth: getIt<FirebaseAuth>(),
+    ),
+  );
   // Movie Details Feature
   getIt.registerLazySingleton<MovieDetailsRemoteDataSource>(
     () => MovieDetailsRemoteDataSourceImpl(getIt<ApiManager>()),
@@ -176,6 +183,23 @@ Future<void> configureDependencies() async {
     ),
   );
 
+  // Cast Details Feature
+  getIt.registerLazySingleton<CastDetailsRemoteDataSource>(
+    () => CastDetailsRemoteDataSourceImpl(getIt<ApiManager>()),
+  );
+  getIt.registerLazySingleton<CastDetailsRepository>(
+    () => CastDetailsRepositoryImpl(getIt<CastDetailsRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<GetCastDetailsUseCase>(
+    () => GetCastDetailsUseCase(getIt<CastDetailsRepository>()),
+  );
+  getIt.registerFactoryParam<CastDetailsCubit, int, String>(
+    (personId, language) => CastDetailsCubit(
+      getCastDetailsUseCase: getIt<GetCastDetailsUseCase>(),
+      personId: personId,
+      language: language,
+    ),
+  );
   // Profile Cubit
   getIt.registerFactory<ProfileCubit>(
     () => ProfileCubit(
