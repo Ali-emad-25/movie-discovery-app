@@ -1,7 +1,5 @@
 import 'package:movie_discovery_app/features/search/domain/entities/search_item.dart';
 
-enum SearchContentType { all, movies, tvShows, people }
-
 enum SearchSortBy { popularity, rating, releaseDate, titleAZ }
 
 class SearchState {
@@ -10,7 +8,6 @@ class SearchState {
   final List<String> recentSearches;
   final bool isLoading;
   final String? errorMessage;
-  final SearchContentType contentType;
   final SearchSortBy sortBy;
   final Set<int> selectedGenres;
   final double minimumScore;
@@ -24,7 +21,6 @@ class SearchState {
     this.recentSearches = const [],
     this.isLoading = false,
     this.errorMessage,
-    this.contentType = SearchContentType.all,
     this.sortBy = SearchSortBy.popularity,
     this.selectedGenres = const {},
     this.minimumScore = 7.5,
@@ -37,12 +33,6 @@ class SearchState {
 
   List<SearchItem> get visibleResults {
     final visible = results.where((item) {
-      final typeMatches = switch (contentType) {
-        SearchContentType.all => item.type != SearchItemType.person,
-        SearchContentType.movies => item.type == SearchItemType.movie,
-        SearchContentType.tvShows => item.type == SearchItemType.tv,
-        SearchContentType.people => item.type == SearchItemType.person,
-      };
       final isPerson = item.type == SearchItemType.person;
       final genreMatches =
           selectedGenres.isEmpty ||
@@ -57,7 +47,7 @@ class SearchState {
           (item.year != null &&
               item.year! >= startYear! &&
               (endYear == null || item.year! <= endYear!));
-      return typeMatches && genreMatches && scoreMatches && yearMatches;
+      return genreMatches && scoreMatches && yearMatches;
     }).toList();
 
     switch (sortBy) {
@@ -86,7 +76,6 @@ class SearchState {
     bool? isLoading,
     String? errorMessage,
     bool clearError = false,
-    SearchContentType? contentType,
     SearchSortBy? sortBy,
     Set<int>? selectedGenres,
     double? minimumScore,
@@ -101,7 +90,6 @@ class SearchState {
     recentSearches: recentSearches ?? this.recentSearches,
     isLoading: isLoading ?? this.isLoading,
     errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
-    contentType: contentType ?? this.contentType,
     sortBy: sortBy ?? this.sortBy,
     selectedGenres: selectedGenres ?? this.selectedGenres,
     minimumScore: minimumScore ?? this.minimumScore,
