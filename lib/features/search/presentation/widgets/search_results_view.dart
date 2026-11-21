@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/core/utils/genre_helper.dart';
 import 'package:movie_discovery_app/features/search/domain/entities/search_item.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_state.dart';
 
@@ -8,12 +9,14 @@ class SearchResultsView extends StatefulWidget {
   final SearchState state;
   final List<SearchItem> results;
   final bool isArabic;
+  final ValueChanged<SearchItem>? onPersonTap;
 
   const SearchResultsView({
     super.key,
     required this.state,
     required this.results,
     required this.isArabic,
+    this.onPersonTap,
   });
 
   @override
@@ -148,6 +151,9 @@ class _SearchResultsViewState extends State<SearchResultsView> {
                     isFavorite: _favorites.contains(widget.results[index].id),
                     onToggleFavorite: () =>
                         _toggleFavorite(widget.results[index].id),
+                    onTap: widget.results[index].type == SearchItemType.person
+                        ? () => widget.onPersonTap?.call(widget.results[index])
+                        : null,
                   ),
                 )
               : ListView.separated(
@@ -160,6 +166,9 @@ class _SearchResultsViewState extends State<SearchResultsView> {
                     isFavorite: _favorites.contains(widget.results[index].id),
                     onToggleFavorite: () =>
                         _toggleFavorite(widget.results[index].id),
+                    onTap: widget.results[index].type == SearchItemType.person
+                        ? () => widget.onPersonTap?.call(widget.results[index])
+                        : null,
                   ),
                 ),
         ),
@@ -218,12 +227,14 @@ class _SearchResultCard extends StatelessWidget {
   final bool isArabic;
   final bool isFavorite;
   final VoidCallback onToggleFavorite;
+  final VoidCallback? onTap;
 
   const _SearchResultCard({
     required this.item,
     required this.isArabic,
     required this.isFavorite,
     required this.onToggleFavorite,
+    this.onTap,
   });
 
   String _t(String en, String ar) => isArabic ? ar : en;
@@ -254,139 +265,130 @@ class _SearchResultCard extends StatelessWidget {
     };
     final categories = item.type == SearchItemType.person
         ? item.description
-        : item.genreIds.take(2).map(_genreName).join(' • ');
+        : GenreHelper.getGenreNames(
+            item.genreIds,
+            languageCode: isArabic ? 'ar' : 'en',
+            limit: 2,
+          );
 
-    return Container(
-      height: 130.h,
-      padding: EdgeInsets.all(12.r),
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        border: Border.all(color: borderColor, width: 1.r),
-        borderRadius: BorderRadius.circular(20.r),
-      ),
-      child: Row(
-        children: [
-          _Poster(item: item, width: 64.w, height: 100.h),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  item.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 130.h,
+        padding: EdgeInsets.all(12.r),
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          border: Border.all(color: borderColor, width: 1.r),
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Row(
+          children: [
+            _Poster(item: item, width: 64.w, height: 100.h),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    item.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  [
-                    if (item.year != null) item.year.toString(),
-                    if (categories.isNotEmpty) categories,
-                  ].join('  •  '),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: secondaryColor, fontSize: 10.sp),
-                ),
-                if (item.type != SearchItemType.person) ...[
-                  SizedBox(height: 3.h),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star_rounded,
-                        color: Colors.amber,
-                        size: 12.sp,
-                      ),
-                      SizedBox(width: 2.w),
-                      Text(
-                        item.rating.toStringAsFixed(1),
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w700,
+                  SizedBox(height: 2.h),
+                  Text(
+                    [
+                      if (item.year != null) item.year.toString(),
+                      if (categories.isNotEmpty) categories,
+                    ].join('  •  '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(color: secondaryColor, fontSize: 10.sp),
+                  ),
+                  if (item.type != SearchItemType.person) ...[
+                    SizedBox(height: 3.h),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star_rounded,
+                          color: Colors.amber,
+                          size: 12.sp,
                         ),
+                        SizedBox(width: 2.w),
+                        Text(
+                          item.rating.toStringAsFixed(1),
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  SizedBox(height: 3.h),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 6.w,
+                        vertical: 2.h,
                       ),
-                    ],
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: .16),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        type,
+                        style: TextStyle(color: primaryColor, fontSize: 9.sp),
+                      ),
+                    ),
                   ),
                 ],
-                SizedBox(height: 3.h),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 6.w,
-                      vertical: 2.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withValues(alpha: .16),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Text(
-                      type,
-                      style: TextStyle(color: primaryColor, fontSize: 9.sp),
-                    ),
+              ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                GestureDetector(
+                  onTap: onToggleFavorite,
+                  child: Icon(
+                    isFavorite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    color: isFavorite
+                        ? (isDark
+                              ? AppColors.errorDarkColor
+                              : AppColors.errorLightColor)
+                        : secondaryColor,
+                    size: 18.sp,
                   ),
                 ),
               ],
             ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(Icons.more_vert_rounded, color: secondaryColor, size: 16.sp),
-              GestureDetector(
-                onTap: onToggleFavorite,
-                child: Icon(
-                  isFavorite
-                      ? Icons.favorite_rounded
-                      : Icons.favorite_border_rounded,
-                  color: isFavorite
-                      ? (isDark
-                            ? AppColors.errorDarkColor
-                            : AppColors.errorLightColor)
-                      : secondaryColor,
-                  size: 18.sp,
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
-
-  String _genreName(int id) =>
-      const {
-        12: 'Adventure',
-        14: 'Fantasy',
-        16: 'Animation',
-        18: 'Drama',
-        27: 'Horror',
-        28: 'Action',
-        35: 'Comedy',
-        53: 'Thriller',
-        80: 'Crime',
-        99: 'Documentary',
-        878: 'Sci-Fi',
-        9648: 'Mystery',
-      }[id] ??
-      '';
 }
 
 class _GridResultCard extends StatelessWidget {
   final SearchItem item;
   final bool isFavorite;
   final VoidCallback onToggleFavorite;
+  final VoidCallback? onTap;
 
   const _GridResultCard({
     required this.item,
     required this.isFavorite,
     required this.onToggleFavorite,
+    this.onTap,
   });
 
   @override
@@ -402,74 +404,77 @@ class _GridResultCard extends StatelessWidget {
         ? AppColors.secondaryTextDarkColor
         : AppColors.secondaryTextLightColor;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        borderRadius: BorderRadius.circular(14.r),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: SizedBox(
-              width: double.infinity,
-              child: _Poster(
-                item: item,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          borderRadius: BorderRadius.circular(14.r),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SizedBox(
                 width: double.infinity,
-                height: double.infinity,
+                child: _Poster(
+                  item: item,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.r),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    item.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
+            Padding(
+              padding: EdgeInsets.all(8.r),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: onToggleFavorite,
-                  child: Icon(
-                    isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite
-                        ? (isDark
-                              ? AppColors.errorDarkColor
-                              : AppColors.errorLightColor)
-                        : secondaryColor,
-                    size: 15.sp,
+                  GestureDetector(
+                    onTap: onToggleFavorite,
+                    child: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite
+                          ? (isDark
+                                ? AppColors.errorDarkColor
+                                : AppColors.errorLightColor)
+                          : secondaryColor,
+                      size: 15.sp,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsetsDirectional.only(
-              start: 8.w,
-              end: 8.w,
-              bottom: 8.h,
+            Padding(
+              padding: EdgeInsetsDirectional.only(
+                start: 8.w,
+                end: 8.w,
+                bottom: 8.h,
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.star_rounded, color: Colors.amber, size: 12),
+                  SizedBox(width: 3.w),
+                  Text(
+                    item.rating.toStringAsFixed(1),
+                    style: TextStyle(color: textColor, fontSize: 10.5.sp),
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                Icon(Icons.star_rounded, color: Colors.amber, size: 12),
-                SizedBox(width: 3.w),
-                Text(
-                  item.rating.toStringAsFixed(1),
-                  style: TextStyle(color: textColor, fontSize: 10.5.sp),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

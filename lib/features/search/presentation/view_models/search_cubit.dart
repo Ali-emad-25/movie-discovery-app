@@ -43,8 +43,8 @@ class SearchCubit extends Cubit<SearchState> {
   void updateQuery(String value) {
     final query = value.trimLeft();
     _debounce?.cancel();
+    _requestId++;
     if (query.trim().isEmpty) {
-      _requestId++;
       emit(
         state.copyWith(
           query: query,
@@ -63,7 +63,7 @@ class SearchCubit extends Cubit<SearchState> {
         clearError: true,
       ),
     );
-    _debounce = Timer(const Duration(milliseconds: 400), () => search(query));
+    _debounce = Timer(const Duration(seconds: 3), () => search(query));
   }
 
   Future<void> search([String? value]) async {
@@ -113,8 +113,6 @@ class SearchCubit extends Cubit<SearchState> {
     await prefs.setStringList(key, recent);
   }
 
-  void setContentType(SearchContentType value) =>
-      emit(state.copyWith(contentType: value));
   void setSortBy(SearchSortBy value) => emit(state.copyWith(sortBy: value));
   void setScoreRange(double minimum, double maximum) =>
       emit(state.copyWith(minimumScore: minimum, maximumScore: maximum));
@@ -140,7 +138,6 @@ class SearchCubit extends Cubit<SearchState> {
 
   void resetFilters() => emit(
     state.copyWith(
-      contentType: SearchContentType.all,
       sortBy: SearchSortBy.popularity,
       selectedGenres: const {},
       minimumScore: 0,
