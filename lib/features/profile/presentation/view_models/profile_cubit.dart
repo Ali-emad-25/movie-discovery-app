@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery_app/core/errors/failures.dart';
 import 'package:movie_discovery_app/core/network/api_result.dart';
-import 'package:movie_discovery_app/features/home/profile_tab/domain/use_cases/profile_use_cases.dart';
+import 'package:movie_discovery_app/features/profile/domain/use_cases/profile_use_cases.dart';
 
 import 'profile_state.dart';
 

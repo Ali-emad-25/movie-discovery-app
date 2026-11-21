@@ -2,20 +2,18 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/core/widgets/app_dialog.dart';
 import 'package:movie_discovery_app/core/widgets/app_toast.dart';
 import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
-
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
-import 'package:movie_discovery_app/features/home/profile_tab/presentation/view_models/profile_cubit.dart';
-import 'package:movie_discovery_app/features/home/profile_tab/presentation/view_models/profile_state.dart';
+import 'package:movie_discovery_app/features/profile/presentation/view_models/profile_cubit.dart';
+import 'package:movie_discovery_app/features/profile/presentation/view_models/profile_state.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class ProfileTab extends StatelessWidget {
+  const ProfileTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -327,13 +325,21 @@ class _ProfileView extends StatelessWidget {
                 'profile.dark_mode',
                 onTap: state.isSaving
                     ? null
-                    : () => settings.setDarkMode(!state.settings.isDark),
+                    : () => _requireAccount(
+                        context,
+                        user,
+                        () => settings.setDarkMode(!state.settings.isDark),
+                      ),
                 trailing: Switch(
                   value: state.settings.isDark,
                   activeTrackColor: theme.colorScheme.primary,
                   onChanged: state.isSaving
                       ? null
-                      : (value) => settings.setDarkMode(value),
+                      : (value) => _requireAccount(
+                          context,
+                          user,
+                          () => settings.setDarkMode(value),
+                        ),
                 ),
               ),
 

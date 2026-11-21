@@ -150,5 +150,12 @@
     "removed_from_watchlist": "Removed from Watchlist",
     "marked_watched": "Marked as Watched",
     "unmarked_watched": "Removed from Watched"
+  },
+  "discover": {
+    "tabs": {
+      "movies": "Movies",
+      "tv_shows": "TV Shows",
+      "people": "People"
+    }
   }
 }
