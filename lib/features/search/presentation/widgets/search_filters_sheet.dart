@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/core/utils/genre_helper.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_cubit.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_state.dart';
 
 class SearchFiltersSheet extends StatelessWidget {
+  static const _genreIds = [878, 28, 18, 53, 12, 27, 35, 16, 9648, 99];
+
   final bool isArabic;
 
   const SearchFiltersSheet({super.key, required this.isArabic});
@@ -37,18 +40,6 @@ class SearchFiltersSheet extends StatelessWidget {
             : AppColors.dividerLightColor;
         final selectedTextColor = AppColors.textDarkColor;
         final cubit = context.read<SearchCubit>();
-        final genres = <int, String>{
-          878: 'Sci-Fi',
-          28: 'Action',
-          18: 'Drama',
-          53: 'Thriller',
-          12: 'Adventure',
-          27: 'Horror',
-          35: 'Comedy',
-          16: 'Animation',
-          9648: 'Mystery',
-          99: 'Documentary',
-        };
         return SizedBox(
           height: height,
           child: DecoratedBox(
@@ -154,14 +145,6 @@ class SearchFiltersSheet extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _label(context, _t('CONTENT TYPE', 'نوع المحتوى')),
-                        SizedBox(height: 6.h),
-                        _ContentTypeSelector(
-                          selectedType: state.contentType,
-                          isArabic: isArabic,
-                          onChanged: cubit.setContentType,
-                        ),
-                        SizedBox(height: 13.h),
                         _label(context, _t('SORT BY', 'ترتيب حسب')),
                         SizedBox(height: 6.h),
                         SingleChildScrollView(
@@ -322,13 +305,17 @@ class SearchFiltersSheet extends StatelessWidget {
                         Wrap(
                           spacing: 9.w,
                           runSpacing: 7.h,
-                          children: genres.entries
+                          children: _genreIds
                               .map(
-                                (entry) => _sortChip(
+                                (genreId) => _sortChip(
                                   context,
-                                  _genreLabel(entry.value),
-                                  state.selectedGenres.contains(entry.key),
-                                  () => cubit.toggleGenre(entry.key),
+                                  GenreHelper.getGenreNames(
+                                    [genreId],
+                                    languageCode: isArabic ? 'ar' : 'en',
+                                    limit: 1,
+                                  ),
+                                  state.selectedGenres.contains(genreId),
+                                  () => cubit.toggleGenre(genreId),
                                 ),
                               )
                               .toList(),
@@ -542,97 +529,6 @@ class SearchFiltersSheet extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  String _genreLabel(String genre) {
-    if (!isArabic) return genre;
-    return const {
-          'Sci-Fi': 'خيال علمي',
-          'Action': 'أكشن',
-          'Drama': 'دراما',
-          'Thriller': 'إثارة',
-          'Adventure': 'مغامرة',
-          'Horror': 'رعب',
-          'Comedy': 'كوميديا',
-          'Animation': 'رسوم متحركة',
-          'Mystery': 'غموض',
-          'Documentary': 'وثائقي',
-        }[genre] ??
-        genre;
-  }
-}
-
-class _ContentTypeSelector extends StatelessWidget {
-  final SearchContentType selectedType;
-  final bool isArabic;
-  final ValueChanged<SearchContentType> onChanged;
-
-  const _ContentTypeSelector({
-    required this.selectedType,
-    required this.isArabic,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDark
-        ? AppColors.dividerDarkColor
-        : AppColors.dividerLightColor;
-    final borderColor = isDark
-        ? AppColors.borderDarkColor
-        : AppColors.borderLightColor;
-    final primaryColor = AppColors.primaryColor;
-    final textColor = isDark
-        ? AppColors.secondaryTextDarkColor
-        : AppColors.secondaryTextLightColor;
-
-    final options = <(SearchContentType, String)>[
-      (SearchContentType.all, isArabic ? 'الكل' : 'All'),
-      (SearchContentType.movies, isArabic ? 'أفلام' : 'Movies'),
-      (SearchContentType.tvShows, isArabic ? 'مسلسلات' : 'TV Shows'),
-      (SearchContentType.people, isArabic ? 'أشخاص' : 'People'),
-    ];
-
-    return Container(
-      height: 44.h,
-      padding: EdgeInsets.all(4.r),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        border: Border.all(color: borderColor),
-        borderRadius: BorderRadius.circular(24.r),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: options.map((option) {
-          final selected = selectedType == option.$1;
-          return Expanded(
-            child: InkWell(
-              onTap: () => onChanged(option.$1),
-              borderRadius: BorderRadius.circular(22.r),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selected ? primaryColor : AppColors.transparent,
-                  borderRadius: BorderRadius.circular(22.r),
-                ),
-                child: Text(
-                  option.$2,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: selected ? AppColors.textDarkColor : textColor,
-                    fontSize: 14.sp,
-                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
       ),
     );
   }
