@@ -7,6 +7,7 @@ class ApiEndpoints {
   static const String nowPlayingMovies = 'movie/now_playing';
   static const String upcomingMovies = 'movie/upcoming';
   static const String popularPeople = 'person/popular';
+  static const String personDetails = 'person/';
   static const String movieDetails = 'movie/';
   static const String searchMovie = 'search/movie';
   static const String searchMulti = 'search/multi';

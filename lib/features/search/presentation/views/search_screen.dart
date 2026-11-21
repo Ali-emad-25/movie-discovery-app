@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/features/cast_details/presentation/views/cast_details_screen.dart';
+import 'package:movie_discovery_app/features/search/domain/entities/search_item.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_cubit.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_state.dart';
 import 'package:movie_discovery_app/features/search/presentation/widgets/search_empty_state.dart';
@@ -70,6 +72,14 @@ class _SearchScreenBodyState extends State<_SearchScreenBody> {
     );
   }
 
+  void _openPersonDetails(SearchItem item) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CastDetailsScreen(personId: item.id),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -130,6 +140,7 @@ class _SearchScreenBodyState extends State<_SearchScreenBody> {
                     state: state,
                     results: results,
                     isArabic: _isArabic,
+                    onPersonTap: _openPersonDetails,
                   );
                 },
               ),
