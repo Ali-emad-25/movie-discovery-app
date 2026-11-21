@@ -1,24 +1,20 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:easy_localization/easy_localization.dart';
-
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_theme.dart';
 import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
-
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/login_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
-
 import 'package:movie_discovery_app/features/home/home_screen.dart';
-import 'package:movie_discovery_app/features/home/profile_tab/presentation/views/profile_screen.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/views/movie_details_screen.dart';
-import 'package:movie_discovery_app/features/splash/presentation/veiws/splash_screen.dart';
-
+import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
+import 'package:movie_discovery_app/features/splash/presentation/views/splash_screen.dart';
 import 'package:movie_discovery_app/firebase_options.dart';
 
 void main() async {
@@ -132,7 +128,7 @@ class _MyAppState extends State<MyApp> {
                       const HomeScreen(),
 
                   AppRoutes.profileScreenRouteName: (context) =>
-                      const ProfileScreen(),
+                      const ProfileTab(),
 
                   AppRoutes.movieDetailsRouteName: (context) {
                     final args = ModalRoute.of(context)?.settings.arguments;

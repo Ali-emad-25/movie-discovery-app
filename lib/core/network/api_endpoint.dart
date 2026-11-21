@@ -6,10 +6,16 @@ class ApiEndpoints {
   static const String topRatedMovies = 'movie/top_rated';
   static const String nowPlayingMovies = 'movie/now_playing';
   static const String upcomingMovies = 'movie/upcoming';
-  static const String popularPeople = 'person/popular';
   static const String personDetails = 'person/';
   static const String movieDetails = 'movie/';
   static const String searchMovie = 'search/movie';
   static const String searchMulti = 'search/multi';
   static const String genres = 'genre/movie/list';
+
+  static const String trendingTv = 'trending/tv/day';
+  static const String topRatedTv = 'tv/top_rated';
+  static const String popularTv = 'tv/popular';
+
+  static const String popularPeople = 'person/popular';
+  static const String trendingPeople = 'trending/person/day';
 }

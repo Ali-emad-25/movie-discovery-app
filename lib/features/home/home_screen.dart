@@ -7,8 +7,9 @@ import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
-import 'package:movie_discovery_app/features/home/home_tab/presentation/views/home_view.dart';
-import 'package:movie_discovery_app/features/home/profile_tab/presentation/views/profile_screen.dart';
+import 'package:movie_discovery_app/features/discover/presentation/views/discover_tab.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/views/home_tab.dart';
+import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
 import 'package:movie_discovery_app/features/search/presentation/views/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,16 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   late final List<Widget> _screens = [
-    const HomeView(),
-    const _PlaceholderScreen(
-      title: 'nav.discover',
-      icon: Icons.explore_outlined,
-    ),
+    const HomeTab(),
+    const DiscoverTab(),
     const _PlaceholderScreen(
       title: 'nav.library',
       icon: Icons.video_library_outlined,
     ),
-    const ProfileScreen(),
+    const ProfileTab(),
   ];
 
   @override

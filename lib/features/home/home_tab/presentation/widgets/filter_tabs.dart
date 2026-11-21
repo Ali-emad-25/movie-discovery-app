@@ -3,25 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 
-class HomeFilterTabs extends StatelessWidget {
+class FilterTabs extends StatelessWidget {
+  final List<String> tabKeys;
   final int selectedIndex;
   final ValueChanged<int> onSelectTab;
 
-  const HomeFilterTabs({
+  const FilterTabs({
     super.key,
+    required this.tabKeys,
     required this.selectedIndex,
     required this.onSelectTab,
   });
-
-  static const List<String> tabKeys = [
-    'home.tabs.all',
-    'home.tabs.trending',
-    'home.tabs.top_rated',
-    'home.tabs.popular',
-    'home.tabs.popular_people',
-    'home.tabs.now_playing',
-    'home.tabs.upcoming',
-  ];
 
   @override
   Widget build(BuildContext context) {

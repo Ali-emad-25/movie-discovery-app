@@ -8,6 +8,7 @@ import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/entities/movie_details.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_cubit.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_state.dart';
+import 'package:movie_discovery_app/features/movie_details/presentation/widgets/content_tabs.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/in_app_trailer_player.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_cast_section.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_action_buttons.dart';
@@ -15,7 +16,6 @@ import 'package:movie_discovery_app/features/movie_details/presentation/widgets/
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_bento_grid.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_header_block.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_hero.dart';
-import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_segmented_tabs.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_shimmer_loading.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_similar_section.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_storyline_card.dart';
@@ -188,7 +188,13 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
                 SizedBox(height: 18.h),
 
                 // 4. Interactive Segmented Tabs (Overview, Cast, Trailers, Similar)
-                MovieDetailsSegmentedTabs(
+                ContentTabs(
+                  tabKeys: [
+                    'movie_details.tabs.overview',
+                    'movie_details.tabs.cast',
+                    'movie_details.tabs.trailers',
+                    'movie_details.tabs.similar',
+                  ],
                   selectedIndex: _selectedTabIndex,
                   onTabSelected: (index) {
                     setState(() {

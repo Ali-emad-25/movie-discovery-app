@@ -148,6 +148,13 @@
     "removed_from_watchlist": "تمت الإزالة من قائمة المشاهدة",
     "marked_watched": "تم التحديد كمشاهد",
     "unmarked_watched": "تمت الإزالة من المشاهدات"
+  },
+  "discover": {
+    "tabs": {
+      "movies": "أفلام",
+      "tv_shows": "مسلسلات",
+      "people": "أشخاص"
+    }
   }
 }
 

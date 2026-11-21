@@ -11,15 +11,15 @@ import 'package:movie_discovery_app/features/home/home_tab/domain/entities/perso
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_cubit.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_state.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/featured_hero_card.dart';
-import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/home_filter_tabs.dart';
+import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/filter_tabs.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/home_shimmer_loading.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/movies_horizontal_section.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/popular_people_section.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/top_rated_section.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/upcoming_releases_section.dart';
 
-class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+class HomeTab extends StatelessWidget {
+  const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,9 @@ class _HomeViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.textDarkColor : AppColors.textLightColor;
+    final textColor = isDark
+        ? AppColors.textDarkColor
+        : AppColors.textLightColor;
 
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
@@ -99,7 +101,17 @@ class _HomeViewBody extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 12.h),
               children: [
                 // Filter Tabs (Category Pills Rail)
-                HomeFilterTabs(
+
+                FilterTabs(
+                  tabKeys: [
+                    'home.tabs.all',
+                    'home.tabs.trending',
+                    'home.tabs.top_rated',
+                    'home.tabs.popular',
+                    'home.tabs.popular_people',
+                    'home.tabs.now_playing',
+                    'home.tabs.upcoming',
+                  ],
                   selectedIndex: filterIndex,
                   onSelectTab: (index) {
                     context.read<HomeCubit>().setFilterIndex(index);
@@ -142,7 +154,9 @@ class _HomeViewBody extends StatelessWidget {
                 if (filterIndex == 0 || filterIndex == 2) ...[
                   TopRatedSection(
                     movies: state.topRatedMovies,
-                    maxItems: filterIndex == 2 ? state.topRatedMovies.length : 3,
+                    maxItems: filterIndex == 2
+                        ? state.topRatedMovies.length
+                        : 3,
                     onSeeAll: () => showComingSoon(context),
                     onMovieTap: (movie) => _showMovieDetails(context, movie),
                   ),
@@ -166,7 +180,8 @@ class _HomeViewBody extends StatelessWidget {
                   PopularPeopleSection(
                     people: state.popularPeople,
                     onSeeAll: () => showComingSoon(context),
-                    onPersonTap: (person) => _showPersonDetails(context, person),
+                    onPersonTap: (person) =>
+                        _showPersonDetails(context, person),
                   ),
                   SizedBox(height: 22.h),
                 ],
