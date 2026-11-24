@@ -5,9 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
+import 'package:movie_discovery_app/core/services/notification_service.dart';
 import 'package:movie_discovery_app/core/utils/app_theme.dart';
 import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/views/notifications_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/login_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
@@ -17,12 +20,16 @@ import 'package:movie_discovery_app/features/profile/presentation/views/profile_
 import 'package:movie_discovery_app/features/splash/presentation/views/splash_screen.dart';
 import 'package:movie_discovery_app/firebase_options.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await configureDependencies();
+
+  await getIt<NotificationService>().init(navigatorKey: navigatorKey);
 
   await EasyLocalization.ensureInitialized();
 
@@ -81,6 +88,9 @@ class _MyAppState extends State<MyApp> {
         return MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => getIt<AuthCubit>()),
+            BlocProvider(
+              create: (_) => getIt<NotificationsCubit>()..loadReminders(),
+            ),
             BlocProvider.value(value: widget.settingsCubit),
           ],
           child: BlocConsumer<SettingsCubit, SettingsState>(
@@ -95,6 +105,7 @@ class _MyAppState extends State<MyApp> {
             },
             builder: (context, state) {
               return MaterialApp(
+                navigatorKey: navigatorKey,
                 debugShowCheckedModeBanner: false,
 
                 // Localization
@@ -129,6 +140,9 @@ class _MyAppState extends State<MyApp> {
 
                   AppRoutes.profileScreenRouteName: (context) =>
                       const ProfileTab(),
+
+                  AppRoutes.notificationsRouteName: (context) =>
+                      const NotificationsScreen(),
 
                   AppRoutes.movieDetailsRouteName: (context) {
                     final args = ModalRoute.of(context)?.settings.arguments;

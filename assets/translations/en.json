@@ -157,5 +157,26 @@
       "tv_shows": "TV Shows",
       "people": "People"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "enable_reminders": "Enable Reminders",
+    "enable_reminders_sub": "Upcoming show alerts & air dates",
+    "default_timing": "Default Reminder Timing",
+    "timing_release_day": "Release Day (10:00 AM)",
+    "timing_day_before": "1 Day Before",
+    "active_reminders": "ACTIVE REMINDERS",
+    "clear_all": "Clear All",
+    "clear_all_title": "Clear All Reminders?",
+    "clear_all_message": "All scheduled release notifications will be cancelled and removed.",
+    "cancel": "Cancel",
+    "swipe_to_dismiss": "Swipe to dismiss",
+    "view_movie": "View Movie",
+    "empty_title": "No Active Reminders",
+    "empty": "Tap 'Remind me' on any upcoming release.",
+    "release_date": "Release",
+    "reminder_cancelled": "Reminder cancelled",
+    "reminder_title": "Out Today!",
+    "reminder_body": "The release you were waiting for is out today. Tap to view details!"
   }
 }

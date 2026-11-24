@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:movie_discovery_app/core/database/database_helper.dart';
 import 'package:movie_discovery_app/core/network/api_manager.dart';
+import 'package:movie_discovery_app/core/services/notification_service.dart';
 import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/core/utils/settings_repository_impl.dart';
 import 'package:movie_discovery_app/core/utils/settings_use_cases.dart';
@@ -46,6 +48,11 @@ import 'package:movie_discovery_app/features/movie_details/domain/use_cases/get_
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_cubit.dart';
 import 'package:movie_discovery_app/features/profile/domain/use_cases/profile_use_cases.dart';
 import 'package:movie_discovery_app/features/profile/presentation/view_models/profile_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/data/data_sources/notifications_local_data_source.dart';
+import 'package:movie_discovery_app/features/notifications/data/repositories/notifications_repository_impl.dart';
+import 'package:movie_discovery_app/features/notifications/domain/repositories/notifications_repository.dart';
+import 'package:movie_discovery_app/features/notifications/domain/use_cases/notifications_use_cases.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -259,6 +266,49 @@ Future<void> configureDependencies() async {
     () => SettingsCubit(
       loadSettingsUseCase: getIt<LoadSettingsUseCase>(),
       saveSettingsUseCase: getIt<SaveSettingsUseCase>(),
+    ),
+  );
+
+  // Local Database & Notifications Service
+  getIt.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
+  getIt.registerLazySingleton<NotificationService>(() => NotificationService());
+
+  // Notifications Feature
+  getIt.registerLazySingleton<NotificationsLocalDataSource>(
+    () => NotificationsLocalDataSourceImpl(getIt<DatabaseHelper>()),
+  );
+  getIt.registerLazySingleton<NotificationsRepository>(
+    () => NotificationsRepositoryImpl(
+      localDataSource: getIt<NotificationsLocalDataSource>(),
+      notificationService: getIt<NotificationService>(),
+    ),
+  );
+  getIt.registerLazySingleton<GetRemindersUseCase>(
+    () => GetRemindersUseCase(getIt<NotificationsRepository>()),
+  );
+  getIt.registerLazySingleton<ScheduleReminderUseCase>(
+    () => ScheduleReminderUseCase(getIt<NotificationsRepository>()),
+  );
+  getIt.registerLazySingleton<CancelReminderUseCase>(
+    () => CancelReminderUseCase(getIt<NotificationsRepository>()),
+  );
+  getIt.registerLazySingleton<ClearAllRemindersUseCase>(
+    () => ClearAllRemindersUseCase(getIt<NotificationsRepository>()),
+  );
+  getIt.registerLazySingleton<GetNotificationSettingsUseCase>(
+    () => GetNotificationSettingsUseCase(getIt<NotificationsRepository>()),
+  );
+  getIt.registerLazySingleton<SaveNotificationSettingsUseCase>(
+    () => SaveNotificationSettingsUseCase(getIt<NotificationsRepository>()),
+  );
+  getIt.registerFactory<NotificationsCubit>(
+    () => NotificationsCubit(
+      getRemindersUseCase: getIt<GetRemindersUseCase>(),
+      scheduleReminderUseCase: getIt<ScheduleReminderUseCase>(),
+      cancelReminderUseCase: getIt<CancelReminderUseCase>(),
+      clearAllRemindersUseCase: getIt<ClearAllRemindersUseCase>(),
+      getNotificationSettingsUseCase: getIt<GetNotificationSettingsUseCase>(),
+      saveNotificationSettingsUseCase: getIt<SaveNotificationSettingsUseCase>(),
     ),
   );
 }

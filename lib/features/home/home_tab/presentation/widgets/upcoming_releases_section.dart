@@ -1,11 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/core/utils/genre_helper.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/home_section_header.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_state.dart';
 
 class UpcomingReleasesSection extends StatelessWidget {
   final List<Movie> movies;
@@ -57,7 +60,7 @@ class UpcomingReleasesSection extends StatelessWidget {
   }
 }
 
-class _UpcomingCard extends StatefulWidget {
+class _UpcomingCard extends StatelessWidget {
   final Movie movie;
   final VoidCallback? onTap;
 
@@ -66,19 +69,19 @@ class _UpcomingCard extends StatefulWidget {
     this.onTap,
   });
 
-  @override
-  State<_UpcomingCard> createState() => _UpcomingCardState();
-}
+  Future<void> _toggleReminder(BuildContext context) async {
+    final added = await context.read<NotificationsCubit>().toggleReminder(
+          movieId: movie.id,
+          title: movie.title,
+          posterPath: movie.posterPath,
+          releaseDate: movie.releaseDate,
+          notificationTitle: '${movie.title} — ${'notifications.reminder_title'.tr()}',
+          notificationBody: 'notifications.reminder_body'.tr(),
+        );
+    if (added == null) return;
 
-class _UpcomingCardState extends State<_UpcomingCard> {
-  bool _isReminderSet = false;
-
-  void _toggleReminder() {
-    setState(() {
-      _isReminderSet = !_isReminderSet;
-    });
     Fluttertoast.showToast(
-      msg: 'home.reminder_set'.tr(),
+      msg: added ? 'home.reminder_set'.tr() : 'notifications.reminder_cancelled'.tr(),
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       backgroundColor: const Color(0xFF171B26),
@@ -110,13 +113,13 @@ class _UpcomingCardState extends State<_UpcomingCard> {
         isDark ? AppColors.secondaryTextDarkColor : AppColors.secondaryTextLightColor;
     final lang = context.locale.languageCode;
     final genre = GenreHelper.getGenreNames(
-      widget.movie.genreIds,
+      movie.genreIds,
       languageCode: lang,
       limit: 2,
     );
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Container(
         width: 290.w,
         padding: EdgeInsets.all(12.r),
@@ -143,10 +146,10 @@ class _UpcomingCardState extends State<_UpcomingCard> {
                 color: isDark ? const Color(0xFF1F2432) : const Color(0xFFE2E8F0),
               ),
               clipBehavior: Clip.antiAlias,
-              child: widget.movie.posterPath != null &&
-                      widget.movie.posterPath!.isNotEmpty
+              child: movie.posterPath != null &&
+                      movie.posterPath!.isNotEmpty
                   ? Image.network(
-                      widget.movie.posterUrl,
+                      movie.posterUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (_, _, _) => _placeholder(),
                     )
@@ -169,7 +172,7 @@ class _UpcomingCardState extends State<_UpcomingCard> {
                       borderRadius: BorderRadius.circular(6.r),
                     ),
                     child: Text(
-                      _formatReleaseDate(widget.movie.releaseDate),
+                      _formatReleaseDate(movie.releaseDate),
                       style: TextStyle(
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w700,
@@ -181,7 +184,7 @@ class _UpcomingCardState extends State<_UpcomingCard> {
 
                   // Title
                   Text(
-                    widget.movie.title,
+                    movie.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -194,7 +197,7 @@ class _UpcomingCardState extends State<_UpcomingCard> {
                   // Type • Genre
                   Text(
                     [
-                      widget.movie.isTvShow
+                      movie.isTvShow
                           ? 'home.tv_show'.tr()
                           : 'home.movie'.tr(),
                       if (genre.isNotEmpty) genre,
@@ -207,48 +210,55 @@ class _UpcomingCardState extends State<_UpcomingCard> {
                     ),
                   ),
 
-                  // Remind Me Button
-                  GestureDetector(
-                    onTap: _toggleReminder,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 6.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _isReminderSet
-                            ? AppColors.primaryColor
-                            : (isDark
-                                ? const Color(0xFF313540)
-                                : const Color(0xFFE2E8F0)),
-                        borderRadius: BorderRadius.circular(9999.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            _isReminderSet
-                                ? Icons.notifications_active_rounded
-                                : Icons.notifications_none_rounded,
-                            size: 13.sp,
-                            color: _isReminderSet
-                                ? Colors.white
-                                : (isDark ? Colors.white : AppColors.textLightColor),
+                  // Remind Me Button (reactive to sqflite NotificationsCubit)
+                  BlocBuilder<NotificationsCubit, NotificationsState>(
+                    builder: (context, state) {
+                      final isReminderSet = state is NotificationsLoaded &&
+                          state.isReminderSet(movie.id);
+
+                      return GestureDetector(
+                        onTap: () => _toggleReminder(context),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 6.h,
                           ),
-                          SizedBox(width: 4.w),
-                          Text(
-                            'home.remind_me'.tr(),
-                            style: TextStyle(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w600,
-                              color: _isReminderSet
-                                  ? Colors.white
-                                  : (isDark ? Colors.white : AppColors.textLightColor),
-                            ),
+                          decoration: BoxDecoration(
+                            color: isReminderSet
+                                ? AppColors.primaryColor
+                                : (isDark
+                                    ? const Color(0xFF313540)
+                                    : const Color(0xFFE2E8F0)),
+                            borderRadius: BorderRadius.circular(9999.r),
                           ),
-                        ],
-                      ),
-                    ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isReminderSet
+                                    ? Icons.notifications_active_rounded
+                                    : Icons.notifications_none_rounded,
+                                size: 13.sp,
+                                color: isReminderSet
+                                    ? Colors.white
+                                    : (isDark ? Colors.white : AppColors.textLightColor),
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                'home.remind_me'.tr(),
+                                style: TextStyle(
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: isReminderSet
+                                      ? Colors.white
+                                      : (isDark ? Colors.white : AppColors.textLightColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

@@ -155,6 +155,27 @@
       "tv_shows": "مسلسلات",
       "people": "أشخاص"
     }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "enable_reminders": "تفعيل التذكيرات",
+    "enable_reminders_sub": "تنبيهات الأعمال القادمة ومواعيد العرض",
+    "default_timing": "موعد التنبيه الافتراضي",
+    "timing_release_day": "يوم الصدور (10:00 ص)",
+    "timing_day_before": "قبل الصدور بيوم",
+    "active_reminders": "التذكيرات النشطة",
+    "clear_all": "مسح الكل",
+    "clear_all_title": "مسح جميع التذكيرات؟",
+    "clear_all_message": "سيتم إلغاء وحذف جميع إشعارات التذكير المجدولة.",
+    "cancel": "إلغاء",
+    "swipe_to_dismiss": "اسحب للحذف",
+    "view_movie": "عرض الفيلم",
+    "empty_title": "لا توجد تذكيرات نشطة",
+    "empty": "اضغط على 'ذكرني' على أي عمل قادم.",
+    "release_date": "موعد الإصدار",
+    "reminder_cancelled": "تم إلغاء التذكير",
+    "reminder_title": "يعرض اليوم!",
+    "reminder_body": "العمل الذي كنت تنتظره متاح اليوم. اضغط لعرض التفاصيل!"
   }
 }
 

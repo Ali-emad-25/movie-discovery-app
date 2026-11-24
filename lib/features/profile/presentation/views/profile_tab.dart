@@ -9,6 +9,8 @@ import 'package:movie_discovery_app/core/widgets/app_dialog.dart';
 import 'package:movie_discovery_app/core/widgets/app_toast.dart';
 import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_state.dart';
 import 'package:movie_discovery_app/features/profile/presentation/view_models/profile_cubit.dart';
 import 'package:movie_discovery_app/features/profile/presentation/view_models/profile_state.dart';
 
@@ -277,10 +279,48 @@ class _ProfileView extends StatelessWidget {
                 context,
                 Icons.notifications_outlined,
                 'profile.notifications',
-                onTap: () => _requireAccount(
+                onTap: () => Navigator.pushNamed(
                   context,
-                  user,
-                  () => showComingSoon(context),
+                  AppRoutes.notificationsRouteName,
+                ),
+                trailing: BlocBuilder<NotificationsCubit, NotificationsState>(
+                  builder: (context, notifState) {
+                    final count = switch (notifState) {
+                      NotificationsLoaded(:final reminders) => reminders.length,
+                      _ => 0,
+                    };
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (count > 0)
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 2.h,
+                            ),
+                            margin: EdgeInsetsDirectional.only(end: 6.w),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.16,
+                              ),
+                              borderRadius: BorderRadius.circular(9999.r),
+                            ),
+                            child: Text(
+                              '$count',
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w700,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
 

@@ -28,3 +28,9 @@ final class UnknownFailure extends Failure {
 final class GoogleSignInCancelledFailure extends Failure {
   const GoogleSignInCancelledFailure() : super('auth.google_sign_in_cancelled');
 }
+
+final class DatabaseFailure extends Failure {
+  const DatabaseFailure([
+    super.message = 'A local database error occurred. Please try again.',
+  ]);
+}

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
+import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
-import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
@@ -12,6 +12,8 @@ import 'package:movie_discovery_app/features/discover/presentation/view_models/d
 import 'package:movie_discovery_app/features/discover/presentation/view_models/discover_state.dart';
 import 'package:movie_discovery_app/features/discover/presentation/views/discover_tab.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/views/home_tab.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_state.dart';
 import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
 import 'package:movie_discovery_app/features/search/presentation/views/search_screen.dart';
 
@@ -101,8 +103,37 @@ class HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(width: 15.w),
           InkWell(
-            onTap: () => showComingSoon(context),
-            child: Icon(Icons.notifications_outlined, size: 25.sp),
+            onTap: () => Navigator.pushNamed(
+              context,
+              AppRoutes.notificationsRouteName,
+            ),
+            child: BlocBuilder<NotificationsCubit, NotificationsState>(
+              builder: (context, state) {
+                final count = switch (state) {
+                  NotificationsLoaded(:final reminders) => reminders.length,
+                  _ => 0,
+                };
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Icon(Icons.notifications_outlined, size: 25.sp),
+                    if (count > 0)
+                      Positioned(
+                        top: -2.h,
+                        right: -2.w,
+                        child: Container(
+                          width: 9.r,
+                          height: 9.r,
+                          decoration: BoxDecoration(
+                            color: colors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
           ),
           SizedBox(width: 15.w),
           BlocBuilder<AuthCubit, AuthState>(
