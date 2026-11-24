@@ -125,9 +125,12 @@ class _TopRatedCardState extends State<TopRatedCard> {
 
                   SizedBox(height: 4.h),
 
-                  // Year • Genre
+                  // Type • Year • Genre
                   Text(
                     [
+                      widget.movie.isTvShow
+                          ? 'home.tv_show'.tr()
+                          : 'home.movie'.tr(),
                       if (widget.movie.releaseYear.isNotEmpty)
                         widget.movie.releaseYear,
                       if (genre.isNotEmpty) genre,
@@ -180,7 +183,9 @@ class _TopRatedCardState extends State<TopRatedCard> {
                           borderRadius: BorderRadius.circular(9999.r),
                         ),
                         child: Text(
-                          'home.movie'.tr(),
+                          widget.movie.isTvShow
+                              ? 'home.tv_show'.tr()
+                              : 'home.movie'.tr(),
                           style: TextStyle(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w600,

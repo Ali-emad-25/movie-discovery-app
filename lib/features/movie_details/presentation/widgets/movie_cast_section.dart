@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/features/cast_details/presentation/views/cast_details_screen.dart';
 import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/entities/cast.dart';
 
@@ -85,60 +86,71 @@ class MovieCastSection extends StatelessWidget {
             separatorBuilder: (_, _) => SizedBox(width: 12.w),
             itemBuilder: (context, index) {
               final member = cast[index];
-              return SizedBox(
-                width: 84.w,
-                child: Column(
-                  children: [
-                    // Avatar with border
-                    Container(
-                      width: 55.r,
-                      height: 55.r,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isDark
-                            ? const Color(0xFF171B26)
-                            : const Color(0xFFE2E8F0),
-                        border: Border.all(color: borderColor, width: 2),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: member.profilePath != null &&
-                              member.profilePath!.isNotEmpty
-                          ? Image.network(
-                              member.profileUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => _placeholder(),
-                            )
-                          : _placeholder(),
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CastDetailsScreen(personId: member.id),
                     ),
-
-                    SizedBox(height: 6.h),
-
-                    // Actor Name
-                    Text(
-                      member.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        color: textColor,
+                  );
+                },
+                behavior: HitTestBehavior.opaque,
+                child: SizedBox(
+                  width: 84.w,
+                  child: Column(
+                    children: [
+                      // Avatar with border
+                      Container(
+                        width: 55.r,
+                        height: 55.r,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isDark
+                              ? const Color(0xFF171B26)
+                              : const Color(0xFFE2E8F0),
+                          border: Border.all(color: borderColor, width: 2),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: member.profilePath != null &&
+                                member.profilePath!.isNotEmpty
+                            ? Image.network(
+                                member.profileUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, _, _) => _placeholder(),
+                              )
+                            : _placeholder(),
                       ),
-                    ),
 
-                    // Character Name
-                    if (member.character.isNotEmpty)
+                      SizedBox(height: 6.h),
+
+                      // Actor Name
                       Text(
-                        member.character,
+                        member.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 10.sp,
-                          color: secondaryTextColor,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
                         ),
                       ),
-                  ],
+
+                      // Character Name
+                      if (member.character.isNotEmpty)
+                        Text(
+                          member.character,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: secondaryTextColor,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               );
             },

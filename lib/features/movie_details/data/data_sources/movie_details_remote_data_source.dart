@@ -13,14 +13,26 @@ class MovieDetailsRemoteDataSourceImpl implements MovieDetailsRemoteDataSource {
 
   @override
   Future<MovieDetailsModel> getMovieDetails(int movieId) async {
-    final response = await _apiManager.get(
-      '${ApiEndpoints.movieDetails}$movieId',
-      queryParameters: {
-        'append_to_response': 'credits,similar,videos',
-      },
-    );
+    try {
+      final response = await _apiManager.get(
+        '${ApiEndpoints.movieDetails}$movieId',
+        queryParameters: {
+          'append_to_response': 'credits,similar,videos',
+        },
+      );
 
-    return MovieDetailsModel.fromJson(response.data as Map<String, dynamic>);
+      return MovieDetailsModel.fromJson(response.data as Map<String, dynamic>);
+    } catch (_) {
+      // Fallback: in case the ID belongs to a TV show
+      final response = await _apiManager.get(
+        'tv/$movieId',
+        queryParameters: {
+          'append_to_response': 'credits,similar,videos',
+        },
+      );
+
+      return MovieDetailsModel.fromJson(response.data as Map<String, dynamic>);
+    }
   }
 }
 

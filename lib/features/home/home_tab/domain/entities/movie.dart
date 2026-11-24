@@ -7,6 +7,7 @@ class Movie {
   final double voteAverage;
   final String releaseDate;
   final List<int> genreIds;
+  final String mediaType;
 
   const Movie({
     required this.id,
@@ -17,7 +18,10 @@ class Movie {
     required this.voteAverage,
     required this.releaseDate,
     required this.genreIds,
+    this.mediaType = 'movie',
   });
+
+  bool get isTvShow => mediaType == 'tv';
 
   String get posterUrl => posterPath != null
       ? 'https://image.tmdb.org/t/p/w500$posterPath'

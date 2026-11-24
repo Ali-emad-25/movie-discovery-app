@@ -167,9 +167,12 @@ class _MovieCardState extends State<MovieCard> {
             ),
             SizedBox(height: 2.h),
 
-            // Genre • Year
+            // Type • Genre • Year
             Text(
               [
+                widget.movie.isTvShow
+                    ? 'home.tv_show'.tr()
+                    : 'home.movie'.tr(),
                 if (genre.isNotEmpty) genre,
                 if (widget.movie.releaseYear.isNotEmpty) widget.movie.releaseYear,
               ].join(' • '),

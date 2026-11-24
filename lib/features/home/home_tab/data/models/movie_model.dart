@@ -10,9 +10,19 @@ class MovieModel extends Movie {
     required super.voteAverage,
     required super.releaseDate,
     required super.genreIds,
+    super.mediaType = 'movie',
   });
 
-  factory MovieModel.fromJson(Map<String, dynamic> json) {
+  factory MovieModel.fromJson(
+    Map<String, dynamic> json, {
+    String? defaultMediaType,
+  }) {
+    final mediaType = json['media_type'] as String? ??
+        defaultMediaType ??
+        (json['first_air_date'] != null || json['name'] != null
+            ? 'tv'
+            : 'movie');
+
     return MovieModel(
       id: json['id'] as int? ?? 0,
       title: json['title'] as String? ?? json['name'] as String? ?? '',
@@ -27,6 +37,7 @@ class MovieModel extends Movie {
               ?.map((e) => e as int)
               .toList() ??
           const [],
+      mediaType: mediaType,
     );
   }
 
@@ -40,6 +51,7 @@ class MovieModel extends Movie {
       'vote_average': voteAverage,
       'release_date': releaseDate,
       'genre_ids': genreIds,
+      'media_type': mediaType,
     };
   }
 }

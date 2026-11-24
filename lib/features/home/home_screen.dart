@@ -2,11 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
 import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
+import 'package:movie_discovery_app/features/discover/presentation/view_models/discover_cubit.dart';
+import 'package:movie_discovery_app/features/discover/presentation/view_models/discover_state.dart';
 import 'package:movie_discovery_app/features/discover/presentation/views/discover_tab.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/views/home_tab.dart';
 import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
@@ -17,17 +20,38 @@ class HomeScreen extends StatefulWidget {
 
   const HomeScreen({super.key, this.initialIndex = 0});
 
+  static HomeScreenState? of(BuildContext context) =>
+      context.findAncestorStateOfType<HomeScreenState>();
+
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   late int _currentIndex;
+  late final DiscoverCubit _discoverCubit;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    _discoverCubit = getIt<DiscoverCubit>()..fetchDiscoverData();
+  }
+
+  @override
+  void dispose() {
+    _discoverCubit.close();
+    super.dispose();
+  }
+
+  void switchToDiscover({
+    DiscoverType type = DiscoverType.movies,
+    DiscoverFilter filter = DiscoverFilter.all,
+  }) {
+    setState(() {
+      _currentIndex = 1;
+    });
+    _discoverCubit.fetchDiscoverData(type: type, filter: filter);
   }
 
   late final List<Widget> _screens = [
@@ -57,7 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
       size: 25.sp,
     );
 
-    return Scaffold(
+    return BlocProvider<DiscoverCubit>.value(
+      value: _discoverCubit,
+      child: Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: Padding(
@@ -145,7 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-    );
+    ),
+  );
   }
 }
 

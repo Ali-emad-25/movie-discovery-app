@@ -19,7 +19,10 @@ class DiscoverRemoteDataSourceImpl implements DiscoverRemoteDataSource {
       queryParameters: {'page': page},
     );
 
-    return MovieResponseModel.fromJson(response.data);
+    return MovieResponseModel.fromJson(
+      response.data,
+      defaultMediaType: 'movie',
+    );
   }
 
   @override
@@ -32,7 +35,10 @@ class DiscoverRemoteDataSourceImpl implements DiscoverRemoteDataSource {
       queryParameters: {'page': page},
     );
 
-    return MovieResponseModel.fromJson(response.data);
+    return MovieResponseModel.fromJson(
+      response.data,
+      defaultMediaType: 'tv',
+    );
   }
 
   @override

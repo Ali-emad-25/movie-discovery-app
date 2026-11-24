@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
+import 'package:movie_discovery_app/features/cast_details/presentation/views/cast_details_screen.dart';
 import 'package:movie_discovery_app/features/discover/presentation/view_models/discover_cubit.dart';
 import 'package:movie_discovery_app/features/discover/presentation/view_models/discover_state.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
@@ -16,10 +17,15 @@ class DiscoverTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<DiscoverCubit>()..fetchDiscoverData(),
-      child: const _DiscoverView(),
-    );
+    try {
+      context.read<DiscoverCubit>();
+      return const _DiscoverView();
+    } catch (_) {
+      return BlocProvider(
+        create: (_) => getIt<DiscoverCubit>()..fetchDiscoverData(),
+        child: const _DiscoverView(),
+      );
+    }
   }
 }
 
@@ -163,7 +169,14 @@ class _DiscoverView extends StatelessWidget {
                     width: double.infinity,
                     imageSize: 100.r,
                     onTap: () {
-                      // Open person details
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CastDetailsScreen(
+                            personId: state.people[index].id,
+                          ),
+                        ),
+                      );
                     },
                   );
                 },

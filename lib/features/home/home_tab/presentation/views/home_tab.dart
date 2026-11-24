@@ -5,7 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
-import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
+import 'package:movie_discovery_app/features/cast_details/presentation/views/cast_details_screen.dart';
+import 'package:movie_discovery_app/features/discover/presentation/view_models/discover_state.dart';
+import 'package:movie_discovery_app/features/home/home_screen.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
 import 'package:movie_discovery_app/features/home/home_tab/domain/entities/person.dart';
 import 'package:movie_discovery_app/features/home/home_tab/presentation/view_models/home_cubit.dart';
@@ -42,7 +44,12 @@ class _HomeViewBody extends StatelessWidget {
   }
 
   void _showPersonDetails(BuildContext context, Person person) {
-    showComingSoon(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CastDetailsScreen(personId: person.id),
+      ),
+    );
   }
 
   @override
@@ -144,7 +151,10 @@ class _HomeViewBody extends StatelessWidget {
                     title: 'home.sections.trending'.tr(),
                     accentColor: const Color(0xFFF59E0B), // Amber accent
                     movies: state.trendingMovies,
-                    onSeeAll: () => showComingSoon(context),
+                    onSeeAll: () => HomeScreen.of(context)?.switchToDiscover(
+                      type: DiscoverType.movies,
+                      filter: DiscoverFilter.trending,
+                    ),
                     onMovieTap: (movie) => _showMovieDetails(context, movie),
                   ),
                   SizedBox(height: 22.h),
@@ -157,7 +167,10 @@ class _HomeViewBody extends StatelessWidget {
                     maxItems: filterIndex == 2
                         ? state.topRatedMovies.length
                         : 3,
-                    onSeeAll: () => showComingSoon(context),
+                    onSeeAll: () => HomeScreen.of(context)?.switchToDiscover(
+                      type: DiscoverType.movies,
+                      filter: DiscoverFilter.topRated,
+                    ),
                     onMovieTap: (movie) => _showMovieDetails(context, movie),
                   ),
                   SizedBox(height: 22.h),
@@ -169,7 +182,10 @@ class _HomeViewBody extends StatelessWidget {
                     title: 'home.sections.popular'.tr(),
                     accentColor: const Color(0xFF7C3AED), // Purple accent
                     movies: state.popularMovies,
-                    onSeeAll: () => showComingSoon(context),
+                    onSeeAll: () => HomeScreen.of(context)?.switchToDiscover(
+                      type: DiscoverType.movies,
+                      filter: DiscoverFilter.popular,
+                    ),
                     onMovieTap: (movie) => _showMovieDetails(context, movie),
                   ),
                   SizedBox(height: 22.h),
@@ -179,7 +195,10 @@ class _HomeViewBody extends StatelessWidget {
                 if (filterIndex == 0 || filterIndex == 4) ...[
                   PopularPeopleSection(
                     people: state.popularPeople,
-                    onSeeAll: () => showComingSoon(context),
+                    onSeeAll: () => HomeScreen.of(context)?.switchToDiscover(
+                      type: DiscoverType.people,
+                      filter: DiscoverFilter.all,
+                    ),
                     onPersonTap: (person) =>
                         _showPersonDetails(context, person),
                   ),
@@ -192,7 +211,10 @@ class _HomeViewBody extends StatelessWidget {
                     title: 'home.sections.now_playing'.tr(),
                     accentColor: const Color(0xFF34C759), // Green accent
                     movies: state.nowPlayingMovies,
-                    onSeeAll: () => showComingSoon(context),
+                    onSeeAll: () => HomeScreen.of(context)?.switchToDiscover(
+                      type: DiscoverType.movies,
+                      filter: DiscoverFilter.nowPlaying,
+                    ),
                     onMovieTap: (movie) => _showMovieDetails(context, movie),
                   ),
                   SizedBox(height: 22.h),
@@ -202,6 +224,10 @@ class _HomeViewBody extends StatelessWidget {
                 if (filterIndex == 0 || filterIndex == 6) ...[
                   UpcomingReleasesSection(
                     movies: state.upcomingMovies,
+                    onSeeAll: () => HomeScreen.of(context)?.switchToDiscover(
+                      type: DiscoverType.movies,
+                      filter: DiscoverFilter.upcoming,
+                    ),
                     onMovieTap: (movie) => _showMovieDetails(context, movie),
                   ),
                   SizedBox(height: 16.h),

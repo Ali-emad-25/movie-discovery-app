@@ -9,11 +9,13 @@ import 'package:movie_discovery_app/features/home/home_tab/presentation/widgets/
 
 class UpcomingReleasesSection extends StatelessWidget {
   final List<Movie> movies;
+  final VoidCallback? onSeeAll;
   final void Function(Movie movie)? onMovieTap;
 
   const UpcomingReleasesSection({
     super.key,
     required this.movies,
+    this.onSeeAll,
     this.onMovieTap,
   });
 
@@ -21,30 +23,14 @@ class UpcomingReleasesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (movies.isEmpty) return const SizedBox.shrink();
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section Header with 'Coming Soon' badge
+        // Section Header
         HomeSectionHeader(
           title: 'home.sections.upcoming_releases'.tr(),
           accentColor: const Color(0xFFFF383C), // Red accent from Figma
-          trailing: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF262A35) : const Color(0xFFE2E8F0),
-              borderRadius: BorderRadius.circular(9999.r),
-            ),
-            child: Text(
-              'home.coming_soon'.tr(),
-              style: TextStyle(
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w600,
-                color: isDark ? const Color(0xFFD2BBFF) : AppColors.primaryColor,
-              ),
-            ),
-          ),
+          onSeeAll: onSeeAll,
         ),
 
         SizedBox(height: 12.h),
@@ -205,17 +191,21 @@ class _UpcomingCardState extends State<_UpcomingCard> {
                     ),
                   ),
 
-                  // Genre
-                  if (genre.isNotEmpty)
-                    Text(
-                      genre,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        color: secondaryTextColor,
-                      ),
+                  // Type • Genre
+                  Text(
+                    [
+                      widget.movie.isTvShow
+                          ? 'home.tv_show'.tr()
+                          : 'home.movie'.tr(),
+                      if (genre.isNotEmpty) genre,
+                    ].join(' • '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: secondaryTextColor,
                     ),
+                  ),
 
                   // Remind Me Button
                   GestureDetector(

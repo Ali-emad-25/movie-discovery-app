@@ -194,6 +194,9 @@ class FeaturedHeroCard extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 [
+                                  m.isTvShow
+                                      ? 'home.tv_show'.tr()
+                                      : 'home.movie'.tr(),
                                   if (m.releaseYear.isNotEmpty) m.releaseYear,
                                   if (genres.isNotEmpty) genres,
                                 ].join(' • '),

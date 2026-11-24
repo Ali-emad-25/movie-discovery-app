@@ -65,6 +65,12 @@ class MovieDetailsModel extends MovieDetails {
       }
     }
 
+    if (director.isEmpty &&
+        json['created_by'] is List &&
+        (json['created_by'] as List).isNotEmpty) {
+      director = (json['created_by'] as List).first['name'] as String? ?? '';
+    }
+
     // Parse collection
     String? collectionName;
     if (json['belongs_to_collection'] != null) {
@@ -134,8 +140,13 @@ class MovieDetailsModel extends MovieDetails {
       backdropPath: json['backdrop_path'] as String?,
       voteAverage: (json['vote_average'] as num?)?.toDouble() ?? 0.0,
       voteCount: json['vote_count'] as int? ?? 0,
-      releaseDate: json['release_date'] as String? ?? '',
-      runtime: json['runtime'] as int? ?? 0,
+      releaseDate: json['release_date'] as String? ??
+          json['first_air_date'] as String? ??
+          '',
+      runtime: (json['runtime'] as int?) ??
+          ((json['episode_run_time'] as List<dynamic>?)?.isNotEmpty == true
+              ? (json['episode_run_time'] as List<dynamic>).first as int
+              : 0),
       genres: genresList,
       tagline: json['tagline'] as String? ?? '',
       trailerKey: trailerKey,
