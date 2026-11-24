@@ -5,11 +5,13 @@ abstract class DiscoverRemoteDataSource {
   Future<MovieResponseModel> getMovies({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   });
 
   Future<MovieResponseModel> getTvShows({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   });
 
   Future<PersonResponseModel> getPeople({

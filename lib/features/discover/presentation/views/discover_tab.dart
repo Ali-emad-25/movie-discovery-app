@@ -106,6 +106,8 @@ class _DiscoverView extends StatelessWidget {
             DiscoverFilter.trending,
             DiscoverFilter.topRated,
             DiscoverFilter.popular,
+            DiscoverFilter.nowPlaying,
+            DiscoverFilter.upcoming,
           ],
           DiscoverType.people => [
             DiscoverFilter.all,

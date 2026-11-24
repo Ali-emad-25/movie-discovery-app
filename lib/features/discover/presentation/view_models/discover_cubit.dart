@@ -54,6 +54,17 @@ class DiscoverCubit extends Cubit<DiscoverState> {
     }
   }
 
+  Map<String, dynamic>? _moviesQueryParams(DiscoverFilter filter) {
+    if (filter == DiscoverFilter.upcoming) {
+      final today = DateTime.now().toIso8601String().split('T').first;
+      return {
+        'primary_release_date.gte': today,
+        'sort_by': 'primary_release_date.asc',
+      };
+    }
+    return null;
+  }
+
   String _moviesEndpoint(DiscoverFilter filter) {
     return switch (filter) {
       DiscoverFilter.all ||
@@ -61,15 +72,28 @@ class DiscoverCubit extends Cubit<DiscoverState> {
       DiscoverFilter.topRated => ApiEndpoints.topRatedMovies,
       DiscoverFilter.popular => ApiEndpoints.popularMovies,
       DiscoverFilter.nowPlaying => ApiEndpoints.nowPlayingMovies,
-      DiscoverFilter.upcoming => ApiEndpoints.upcomingMovies,
+      DiscoverFilter.upcoming => ApiEndpoints.discoverMovie,
     };
+  }
+
+  Map<String, dynamic>? _tvQueryParams(DiscoverFilter filter) {
+    if (filter == DiscoverFilter.upcoming) {
+      final today = DateTime.now().toIso8601String().split('T').first;
+      return {
+        'first_air_date.gte': today,
+        'sort_by': 'first_air_date.asc',
+      };
+    }
+    return null;
   }
 
   String _tvEndpoint(DiscoverFilter filter) {
     return switch (filter) {
       DiscoverFilter.all || DiscoverFilter.trending => ApiEndpoints.trendingTv,
       DiscoverFilter.topRated => ApiEndpoints.topRatedTv,
-      _ => ApiEndpoints.popularTv,
+      DiscoverFilter.popular => ApiEndpoints.popularTv,
+      DiscoverFilter.nowPlaying => ApiEndpoints.onTheAirTv,
+      DiscoverFilter.upcoming => ApiEndpoints.discoverTv,
     };
   }
 
@@ -85,6 +109,7 @@ class DiscoverCubit extends Cubit<DiscoverState> {
     final result = await getDiscoverMovies(
       endpoint: _moviesEndpoint(filter),
       page: 1,
+      queryParameters: _moviesQueryParams(filter),
     );
 
     if (requestId != _requestId) return;
@@ -119,6 +144,7 @@ class DiscoverCubit extends Cubit<DiscoverState> {
     final result = await getDiscoverTvShows(
       endpoint: _tvEndpoint(filter),
       page: 1,
+      queryParameters: _tvQueryParams(filter),
     );
 
     if (requestId != _requestId) return;
@@ -211,6 +237,7 @@ class DiscoverCubit extends Cubit<DiscoverState> {
           final result = await getDiscoverMovies(
             endpoint: _moviesEndpoint(currentState.filter),
             page: nextPage,
+            queryParameters: _moviesQueryParams(currentState.filter),
           );
 
           if (requestId != _requestId) return;
@@ -239,6 +266,7 @@ class DiscoverCubit extends Cubit<DiscoverState> {
           final result = await getDiscoverTvShows(
             endpoint: _tvEndpoint(currentState.filter),
             page: nextPage,
+            queryParameters: _tvQueryParams(currentState.filter),
           );
 
           if (requestId != _requestId) return;

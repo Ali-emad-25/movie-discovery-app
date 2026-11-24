@@ -13,10 +13,14 @@ class DiscoverRemoteDataSourceImpl implements DiscoverRemoteDataSource {
   Future<MovieResponseModel> getMovies({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   }) async {
     final response = await apiManager.get(
       endpoint,
-      queryParameters: {'page': page},
+      queryParameters: {
+        'page': page,
+        if (queryParameters != null) ...queryParameters,
+      },
     );
 
     return MovieResponseModel.fromJson(
@@ -29,10 +33,14 @@ class DiscoverRemoteDataSourceImpl implements DiscoverRemoteDataSource {
   Future<MovieResponseModel> getTvShows({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   }) async {
     final response = await apiManager.get(
       endpoint,
-      queryParameters: {'page': page},
+      queryParameters: {
+        'page': page,
+        if (queryParameters != null) ...queryParameters,
+      },
     );
 
     return MovieResponseModel.fromJson(

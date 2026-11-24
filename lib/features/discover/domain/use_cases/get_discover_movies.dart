@@ -10,7 +10,12 @@ class GetDiscoverMovies {
   Future<ApiResult<MovieResponseModel>> call({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   }) {
-    return repository.getMovies(endpoint: endpoint, page: page);
+    return repository.getMovies(
+      endpoint: endpoint,
+      page: page,
+      queryParameters: queryParameters,
+    );
   }
 }

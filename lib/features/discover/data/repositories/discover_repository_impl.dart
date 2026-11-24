@@ -15,9 +15,14 @@ class DiscoverRepositoryImpl implements DiscoverRepository {
   Future<ApiResult<MovieResponseModel>> getMovies({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   }) {
     return _safeCall(
-      () => remoteDataSource.getMovies(endpoint: endpoint, page: page),
+      () => remoteDataSource.getMovies(
+        endpoint: endpoint,
+        page: page,
+        queryParameters: queryParameters,
+      ),
     );
   }
 
@@ -25,9 +30,14 @@ class DiscoverRepositoryImpl implements DiscoverRepository {
   Future<ApiResult<MovieResponseModel>> getTvShows({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   }) {
     return _safeCall(
-      () => remoteDataSource.getTvShows(endpoint: endpoint, page: page),
+      () => remoteDataSource.getTvShows(
+        endpoint: endpoint,
+        page: page,
+        queryParameters: queryParameters,
+      ),
     );
   }
 

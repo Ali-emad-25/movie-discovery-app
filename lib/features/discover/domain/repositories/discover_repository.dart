@@ -6,11 +6,13 @@ abstract class DiscoverRepository {
   Future<ApiResult<MovieResponseModel>> getMovies({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   });
 
   Future<ApiResult<MovieResponseModel>> getTvShows({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   });
 
   Future<ApiResult<PersonResponseModel>> getPeople({

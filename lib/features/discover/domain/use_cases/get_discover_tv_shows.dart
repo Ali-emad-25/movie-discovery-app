@@ -10,7 +10,12 @@ class GetDiscoverTvShows {
   Future<ApiResult<MovieResponseModel>> call({
     required String endpoint,
     int page = 1,
+    Map<String, dynamic>? queryParameters,
   }) {
-    return repository.getTvShows(endpoint: endpoint, page: page);
+    return repository.getTvShows(
+      endpoint: endpoint,
+      page: page,
+      queryParameters: queryParameters,
+    );
   }
 }

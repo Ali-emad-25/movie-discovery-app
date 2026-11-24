@@ -9,6 +9,8 @@ class ApiEndpoints {
   static const String upcomingMovies = 'movie/upcoming';
   static const String personDetails = 'person/';
   static const String movieDetails = 'movie/';
+  static const String discoverMovie = 'discover/movie';
+  static const String discoverTv = 'discover/tv';
   static const String searchMovie = 'search/movie';
   static const String searchMulti = 'search/multi';
   static const String genres = 'genre/movie/list';
