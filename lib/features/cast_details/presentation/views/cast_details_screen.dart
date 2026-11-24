@@ -386,19 +386,10 @@ class _CastDetailsBodyState extends State<_CastDetailsBody> {
             ),
           ),
         SizedBox(height: 14.h),
+        _bornCard(details, isDark, textColor, secondaryColor),
+        SizedBox(height: 8.h),
         Row(
           children: [
-            Expanded(
-              child: _statCard(
-                _t('BORN', 'الميلاد'),
-                _formatDate(details.birthday),
-                details.placeOfBirth ?? _t('Unknown', 'غير معروف'),
-                isDark,
-                textColor,
-                secondaryColor,
-              ),
-            ),
-            SizedBox(width: 7.w),
             Expanded(
               child: _statCard(
                 _t('RATING', 'التقييم'),
@@ -410,7 +401,7 @@ class _CastDetailsBodyState extends State<_CastDetailsBody> {
                 showStar: true,
               ),
             ),
-            SizedBox(width: 7.w),
+            SizedBox(width: 8.w),
             Expanded(
               child: _statCard(
                 _t('KNOWN FOR', 'أعماله'),
@@ -580,6 +571,89 @@ class _CastDetailsBodyState extends State<_CastDetailsBody> {
         ),
     ],
   );
+
+  Widget _bornCard(
+    CastDetails details,
+    bool isDark,
+    Color textColor,
+    Color secondaryColor,
+  ) {
+    final birthDate = _formatDate(details.birthday);
+    final ageText = details.age != null
+        ? ' (${details.age} ${_t('years old', 'سنة')})'
+        : '';
+    final placeOfBirth = details.placeOfBirth;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        color:
+            isDark ? AppColors.cardSurfaceDarkColor : AppColors.cardLightColor,
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(
+          color: isDark ? AppColors.borderDarkColor : AppColors.borderLightColor,
+          width: 1.r,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 42.r,
+            height: 42.r,
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.cake_outlined,
+              size: 20.sp,
+              color: AppColors.primaryColor,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _t('BORN', 'الميلاد'),
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: .3,
+                  ),
+                ),
+                SizedBox(height: 3.h),
+                Text(
+                  '$birthDate$ageText',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 13.5.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (placeOfBirth != null && placeOfBirth.isNotEmpty) ...[
+                  SizedBox(height: 2.h),
+                  Text(
+                    placeOfBirth,
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontSize: 11.5.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _statCard(
     String label,

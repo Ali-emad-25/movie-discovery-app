@@ -41,8 +41,7 @@ class MovieDetailsModel extends MovieDetails {
         ? creditsJson['cast'] as List<dynamic>?
         : null;
     final castList = castJson
-            ?.take(15)
-            .map((c) => CastModel.fromJson(c as Map<String, dynamic>))
+            ?.map((c) => CastModel.fromJson(c as Map<String, dynamic>))
             .toList() ??
         const [];
 
