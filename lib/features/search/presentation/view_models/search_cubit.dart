@@ -50,6 +50,7 @@ class SearchCubit extends Cubit<SearchState> {
           query: query,
           results: const [],
           isLoading: false,
+          isDebouncing: false,
           clearError: true,
         ),
       );
@@ -59,7 +60,8 @@ class SearchCubit extends Cubit<SearchState> {
       state.copyWith(
         query: query,
         results: const [],
-        isLoading: true,
+        isLoading: false,
+        isDebouncing: true,
         clearError: true,
       ),
     );
@@ -76,6 +78,7 @@ class SearchCubit extends Cubit<SearchState> {
         query: query,
         results: const [],
         isLoading: true,
+        isDebouncing: false,
         clearError: true,
       ),
     );
@@ -155,6 +158,7 @@ class SearchCubit extends Cubit<SearchState> {
         query: '',
         results: const [],
         isLoading: false,
+        isDebouncing: false,
         clearError: true,
       ),
     );
