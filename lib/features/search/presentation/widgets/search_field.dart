@@ -56,7 +56,9 @@ class SearchField extends StatelessWidget {
                 cursorColor: primaryColor,
                 textInputAction: TextInputAction.search,
                 onChanged: context.read<SearchCubit>().updateQuery,
-                onSubmitted: context.read<SearchCubit>().search,
+                onSubmitted: (value) {
+                  context.read<SearchCubit>().search(value);
+                },
                 decoration: InputDecoration(
                   filled: false,
                   hintText: isArabic ? 'بحث' : 'Search',

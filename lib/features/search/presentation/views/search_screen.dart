@@ -100,6 +100,9 @@ class _SearchScreenBodyState extends State<_SearchScreenBody> {
                       onSelectQuery: _selectQuery,
                     );
                   }
+                  if (state.isDebouncing) {
+                    return const SizedBox.shrink();
+                  }
                   if (state.isLoading && state.results.isEmpty) {
                     return Center(
                       child: CircularProgressIndicator(color: primaryColor),

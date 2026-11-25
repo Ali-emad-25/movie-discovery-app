@@ -7,6 +7,7 @@ class SearchState {
   final List<SearchItem> results;
   final List<String> recentSearches;
   final bool isLoading;
+  final bool isDebouncing;
   final String? errorMessage;
   final SearchSortBy sortBy;
   final Set<int> selectedGenres;
@@ -20,6 +21,7 @@ class SearchState {
     this.results = const [],
     this.recentSearches = const [],
     this.isLoading = false,
+    this.isDebouncing = false,
     this.errorMessage,
     this.sortBy = SearchSortBy.popularity,
     this.selectedGenres = const {},
@@ -74,6 +76,7 @@ class SearchState {
     List<SearchItem>? results,
     List<String>? recentSearches,
     bool? isLoading,
+    bool? isDebouncing,
     String? errorMessage,
     bool clearError = false,
     SearchSortBy? sortBy,
@@ -89,6 +92,7 @@ class SearchState {
     results: results ?? this.results,
     recentSearches: recentSearches ?? this.recentSearches,
     isLoading: isLoading ?? this.isLoading,
+    isDebouncing: isDebouncing ?? this.isDebouncing,
     errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     sortBy: sortBy ?? this.sortBy,
     selectedGenres: selectedGenres ?? this.selectedGenres,
