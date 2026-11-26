@@ -9,14 +9,15 @@ import 'package:movie_discovery_app/core/services/notification_service.dart';
 import 'package:movie_discovery_app/core/utils/app_theme.dart';
 import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
-import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
-import 'package:movie_discovery_app/features/notifications/presentation/views/notifications_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/login_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
 import 'package:movie_discovery_app/features/home/home_screen.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/views/movie_details_screen.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/views/notifications_screen.dart';
 import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
+import 'package:movie_discovery_app/features/search/presentation/views/search_screen.dart';
 import 'package:movie_discovery_app/features/splash/presentation/views/splash_screen.dart';
 import 'package:movie_discovery_app/firebase_options.dart';
 
@@ -143,6 +144,8 @@ class _MyAppState extends State<MyApp> {
 
                   AppRoutes.notificationsRouteName: (context) =>
                       const NotificationsScreen(),
+
+                  AppRoutes.searchRouteName: (context) => const SearchScreen(),
 
                   AppRoutes.movieDetailsRouteName: (context) {
                     final args = ModalRoute.of(context)?.settings.arguments;

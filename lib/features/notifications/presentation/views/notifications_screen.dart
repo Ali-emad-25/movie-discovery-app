@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/core/widgets/app_custom_app_bar.dart';
 import 'package:movie_discovery_app/core/widgets/app_dialog.dart';
 import 'package:movie_discovery_app/features/notifications/domain/entities/movie_reminder.dart';
 import 'package:movie_discovery_app/features/notifications/domain/entities/notification_settings.dart';
@@ -60,12 +61,12 @@ class NotificationsScreen extends StatelessWidget {
     );
 
     await context.read<NotificationsCubit>().rescheduleMovie(
-          reminder: reminder,
-          newScheduledTime: newDateTime,
-          notificationTitle:
-              '${reminder.title} — ${'notifications.reminder_title'.tr()}',
-          notificationBody: 'notifications.reminder_body'.tr(),
-        );
+      reminder: reminder,
+      newScheduledTime: newDateTime,
+      notificationTitle:
+          '${reminder.title} — ${'notifications.reminder_title'.tr()}',
+      notificationBody: 'notifications.reminder_body'.tr(),
+    );
   }
 
   @override
@@ -73,49 +74,23 @@ class NotificationsScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF0F131D) : const Color(0xFFF8FAFC);
     final cardColor = isDark ? const Color(0xFF171B26) : Colors.white;
-    final borderColor =
-        isDark ? const Color(0xFF262A35) : const Color(0xFFE2E8F0);
-    final textColor =
-        isDark ? AppColors.textDarkColor : AppColors.textLightColor;
-    final secondaryColor =
-        isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final borderColor = isDark
+        ? const Color(0xFF262A35)
+        : const Color(0xFFE2E8F0);
+    final textColor = isDark
+        ? AppColors.textDarkColor
+        : AppColors.textLightColor;
+    final secondaryColor = isDark
+        ? const Color(0xFF94A3B8)
+        : const Color(0xFF64748B);
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: bgColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded, color: textColor),
-          onPressed: () => Navigator.pop(context),
-        ),
-        titleSpacing: 0,
-        title: Row(
-          children: [
-            Container(
-              width: 34.r,
-              height: 34.r,
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor.withValues(alpha: 0.16),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Icon(
-                Icons.notifications_none_rounded,
-                color: AppColors.primaryColor,
-                size: 19.sp,
-              ),
-            ),
-            SizedBox(width: 10.w),
-            Text(
-              'notifications.title'.tr(),
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
+      appBar: AppCustomAppBar(
+        title: 'notifications.title',
+        icon: Icons.notifications_none_rounded,
+        bgColor: bgColor,
+        textColor: textColor,
       ),
       body: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
@@ -337,10 +312,7 @@ class _QuickSettingsCard extends StatelessWidget {
                     SizedBox(height: 3.h),
                     Text(
                       'notifications.enable_reminders_sub'.tr(),
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: secondaryColor,
-                      ),
+                      style: TextStyle(fontSize: 12.sp, color: secondaryColor),
                     ),
                   ],
                 ),
@@ -381,8 +353,8 @@ class _QuickSettingsCard extends StatelessWidget {
                     settings.copyWith(
                       defaultTiming: ReminderTiming.onReleaseDay,
                     ),
-                    notificationTitleSuffix:
-                        'notifications.reminder_title'.tr(),
+                    notificationTitleSuffix: 'notifications.reminder_title'
+                        .tr(),
                     notificationBody: 'notifications.reminder_body'.tr(),
                   ),
                 ),
@@ -400,8 +372,8 @@ class _QuickSettingsCard extends StatelessWidget {
                     settings.copyWith(
                       defaultTiming: ReminderTiming.oneDayBefore,
                     ),
-                    notificationTitleSuffix:
-                        'notifications.reminder_title'.tr(),
+                    notificationTitleSuffix: 'notifications.reminder_title'
+                        .tr(),
                     notificationBody: 'notifications.reminder_body'.tr(),
                   ),
                 ),
@@ -488,9 +460,10 @@ class _ReminderFeedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheduledFormatted =
-        DateFormat('MMM d, h:mm a', context.locale.languageCode)
-            .format(reminder.scheduledTime);
+    final scheduledFormatted = DateFormat(
+      'MMM d, h:mm a',
+      context.locale.languageCode,
+    ).format(reminder.scheduledTime);
 
     return Dismissible(
       key: ValueKey(reminder.movieId),
@@ -600,10 +573,7 @@ class _ReminderFeedCard extends StatelessWidget {
                   SizedBox(height: 5.h),
                   Text(
                     '${'notifications.release_date'.tr()}: ${reminder.releaseDate}',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: secondaryColor,
-                    ),
+                    style: TextStyle(fontSize: 12.sp, color: secondaryColor),
                   ),
                   SizedBox(height: 10.h),
                   Row(
@@ -714,12 +684,14 @@ class _AnimatedEmptyRemindersState extends State<_AnimatedEmptyReminders>
       duration: const Duration(milliseconds: 2200),
     )..repeat(reverse: true);
 
-    _floatAnim = Tween<double>(begin: -6, end: 6).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    _pulseAnim = Tween<double>(begin: 0.92, end: 1.08).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _floatAnim = Tween<double>(
+      begin: -6,
+      end: 6,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _pulseAnim = Tween<double>(
+      begin: 0.92,
+      end: 1.08,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -741,10 +713,7 @@ class _AnimatedEmptyRemindersState extends State<_AnimatedEmptyReminders>
               builder: (context, child) {
                 return Transform.translate(
                   offset: Offset(0, _floatAnim.value),
-                  child: Transform.scale(
-                    scale: _pulseAnim.value,
-                    child: child,
-                  ),
+                  child: Transform.scale(scale: _pulseAnim.value, child: child),
                 );
               },
               child: Container(

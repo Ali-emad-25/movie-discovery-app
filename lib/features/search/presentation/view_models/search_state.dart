@@ -25,7 +25,7 @@ class SearchState {
     this.errorMessage,
     this.sortBy = SearchSortBy.popularity,
     this.selectedGenres = const {},
-    this.minimumScore = 7.5,
+    this.minimumScore = 0,
     this.maximumScore = 10,
     this.startYear,
     this.endYear,
