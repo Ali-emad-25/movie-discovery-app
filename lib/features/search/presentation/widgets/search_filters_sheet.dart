@@ -17,7 +17,7 @@ class SearchFiltersSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height * .86;
+    final height = MediaQuery.sizeOf(context).height * .76;
     return BlocBuilder<SearchCubit, SearchState>(
       builder: (context, state) {
         final theme = Theme.of(context);
@@ -45,7 +45,7 @@ class SearchFiltersSheet extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: surfaceColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(22.r)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30.r)),
             ),
             child: Column(
               children: [
@@ -54,7 +54,7 @@ class SearchFiltersSheet extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Container(
-                      margin: EdgeInsets.only(top: 10.h),
+                      margin: EdgeInsets.only(top: 15.h),
                       width: 38.w,
                       height: 3.h,
                       decoration: BoxDecoration(
@@ -69,8 +69,8 @@ class SearchFiltersSheet extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        width: 30.r,
-                        height: 30.r,
+                        width: 35.r,
+                        height: 35.r,
                         decoration: BoxDecoration(
                           color: primaryColor.withValues(alpha: .16),
                           borderRadius: BorderRadius.circular(7.r),
@@ -78,7 +78,7 @@ class SearchFiltersSheet extends StatelessWidget {
                         child: Icon(
                           Icons.tune_rounded,
                           color: primaryColor,
-                          size: 14.sp,
+                          size: 20.sp,
                         ),
                       ),
                       SizedBox(width: 7.w),
@@ -87,7 +87,7 @@ class SearchFiltersSheet extends StatelessWidget {
                           _t('Filters & Sort', 'التصفية والترتيب'),
                           style: TextStyle(
                             color: textColor,
-                            fontSize: 18.sp,
+                            fontSize: 20.sp,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -103,7 +103,7 @@ class SearchFiltersSheet extends StatelessWidget {
                           _t('Reset All', 'إعادة ضبط'),
                           style: TextStyle(
                             color: primaryColor,
-                            fontSize: 10.sp,
+                            fontSize: 14.sp,
                           ),
                         ),
                       ),

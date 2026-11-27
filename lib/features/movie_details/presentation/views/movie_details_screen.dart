@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/core/widgets/app_custom_app_bar.dart';
 import 'package:movie_discovery_app/features/movie_details/domain/entities/movie_details.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_cubit.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/view_models/movie_details_state.dart';
@@ -12,7 +13,6 @@ import 'package:movie_discovery_app/features/movie_details/presentation/widgets/
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/in_app_trailer_player.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_cast_section.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_action_buttons.dart';
-import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_app_bar.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_bento_grid.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_header_block.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/widgets/movie_details_hero.dart';
@@ -24,10 +24,7 @@ import 'package:movie_discovery_app/features/movie_details/presentation/widgets/
 class MovieDetailsScreen extends StatelessWidget {
   final int movieId;
 
-  const MovieDetailsScreen({
-    super.key,
-    required this.movieId,
-  });
+  const MovieDetailsScreen({super.key, required this.movieId});
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +70,11 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
     Fluttertoast.showToast(
       msg: _isFavorite
           ? (context.locale.languageCode == 'ar'
-              ? 'تمت الإضافة إلى المفضلة'
-              : 'Added to Favorites')
+                ? 'تمت الإضافة إلى المفضلة'
+                : 'Added to Favorites')
           : (context.locale.languageCode == 'ar'
-              ? 'تمت الإزالة من المفضلة'
-              : 'Removed from Favorites'),
+                ? 'تمت الإزالة من المفضلة'
+                : 'Removed from Favorites'),
       toastLength: Toast.LENGTH_SHORT,
       backgroundColor: const Color(0xFF171B26),
       textColor: Colors.white,
@@ -88,7 +85,9 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF0F131D) : const Color(0xFFF8FAFC);
-    final textColor = isDark ? AppColors.textDarkColor : AppColors.textLightColor;
+    final textColor = isDark
+        ? AppColors.textDarkColor
+        : AppColors.textLightColor;
 
     return BlocBuilder<MovieDetailsCubit, MovieDetailsState>(
       builder: (context, state) {
@@ -102,16 +101,11 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
         if (state is MovieDetailsError) {
           return Scaffold(
             backgroundColor: bgColor,
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_rounded,
-                  color: isDark ? Colors.white : AppColors.textLightColor,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
+            appBar: AppCustomAppBar(
+              title: 'movie_details.title'.tr(),
+              icon: Icons.movie,
+              bgColor: bgColor,
+              textColor: textColor,
             ),
             body: Center(
               child: Padding(
@@ -137,13 +131,16 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
                     SizedBox(height: 16.h),
                     ElevatedButton(
                       onPressed: () {
-                        final movieId = (context
-                                .findAncestorWidgetOfExactType<MovieDetailsScreen>())
-                            ?.movieId;
+                        final movieId =
+                            (context
+                                    .findAncestorWidgetOfExactType<
+                                      MovieDetailsScreen
+                                    >())
+                                ?.movieId;
                         if (movieId != null) {
-                          context
-                              .read<MovieDetailsCubit>()
-                              .fetchMovieDetails(movieId);
+                          context.read<MovieDetailsCubit>().fetchMovieDetails(
+                            movieId,
+                          );
                         }
                       },
                       child: Text('common.retry'.tr()),
@@ -160,9 +157,11 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
 
           return Scaffold(
             backgroundColor: bgColor,
-            appBar: MovieDetailsAppBar(
-              movieTitle: movie.title,
-              onBack: () => Navigator.pop(context),
+            appBar: AppCustomAppBar(
+              title: 'movie_details.title'.tr(),
+              icon: Icons.movie,
+              bgColor: bgColor,
+              textColor: textColor,
             ),
             body: ListView(
               padding: EdgeInsets.only(bottom: 32.h),
@@ -229,7 +228,8 @@ class _MovieDetailsViewState extends State<_MovieDetailsView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (_) => MovieDetailsScreen(movieId: similar.id),
+                          builder: (_) =>
+                              MovieDetailsScreen(movieId: similar.id),
                         ),
                       );
                     },

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/routes/app_routes.dart';
 import 'package:movie_discovery_app/core/utils/app_assets.dart';
+import 'package:movie_discovery_app/core/utils/app_colors.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_state.dart';
@@ -15,7 +16,6 @@ import 'package:movie_discovery_app/features/home/home_tab/presentation/views/ho
 import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
 import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_state.dart';
 import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
-import 'package:movie_discovery_app/features/search/presentation/views/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialIndex;
@@ -86,124 +86,136 @@ class HomeScreenState extends State<HomeScreen> {
     return BlocProvider<DiscoverCubit>.value(
       value: _discoverCubit,
       child: Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: Padding(
-          padding: EdgeInsetsDirectional.only(start: 16.w),
-          child: Image.asset(AppAssets.logo),
-        ),
-        title: Text(titles[_currentIndex], style: theme.textTheme.titleLarge),
-        actionsPadding: EdgeInsets.symmetric(horizontal: 16.w),
-        actions: [
-          InkWell(
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const SearchScreen()),
-            ),
-            child: Icon(Icons.search, size: 25.sp),
+        appBar: AppBar(
+          surfaceTintColor: AppColors.transparent,
+          leading: Padding(
+            padding: EdgeInsetsDirectional.only(start: 16.w),
+            child: Image.asset(AppAssets.logo),
           ),
-          SizedBox(width: 15.w),
-          InkWell(
-            onTap: () => Navigator.pushNamed(
-              context,
-              AppRoutes.notificationsRouteName,
-            ),
-            child: BlocBuilder<NotificationsCubit, NotificationsState>(
+          title: Text(titles[_currentIndex], style: theme.textTheme.titleLarge),
+          actionsPadding: EdgeInsets.symmetric(horizontal: 16.w),
+
+          actions: [
+            if (_currentIndex != titles.length - 1)
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.searchRouteName);
+                },
+                child: Padding(
+                  padding: EdgeInsets.all(8.r),
+                  child: Icon(Icons.search, size: 25.sp),
+                ),
+              ),
+            SizedBox(width: 5.w),
+            if (_currentIndex != titles.length - 1)
+              InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  AppRoutes.notificationsRouteName,
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(8.r),
+                  child: BlocBuilder<NotificationsCubit, NotificationsState>(
+                    builder: (context, state) {
+                      final count = switch (state) {
+                        NotificationsLoaded(:final reminders) =>
+                          reminders.length,
+                        _ => 0,
+                      };
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Icon(Icons.notifications_outlined, size: 25.sp),
+                          if (count > 0)
+                            Positioned(
+                              top: -2.h,
+                              right: -2.w,
+                              child: Container(
+                                width: 9.r,
+                                height: 9.r,
+                                decoration: BoxDecoration(
+                                  color: colors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            SizedBox(width: 18.w),
+            BlocBuilder<AuthCubit, AuthState>(
               builder: (context, state) {
-                final count = switch (state) {
-                  NotificationsLoaded(:final reminders) => reminders.length,
-                  _ => 0,
+                final user = switch (state) {
+                  AuthSuccess(user: final user) => user,
+                  AuthLoginSuccess(user: final user) => user,
+                  _ => const User.guest(),
                 };
-                return Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Icon(Icons.notifications_outlined, size: 25.sp),
-                    if (count > 0)
-                      Positioned(
-                        top: -2.h,
-                        right: -2.w,
-                        child: Container(
-                          width: 9.r,
-                          height: 9.r,
-                          decoration: BoxDecoration(
-                            color: colors.primary,
-                            shape: BoxShape.circle,
+
+                return CircleAvatar(
+                  radius: 18.r,
+                  backgroundColor: colors.primary,
+                  child:
+                      user.isGuest ||
+                          user.photoUrl == null ||
+                          user.photoUrl!.isEmpty
+                      ? avatar
+                      : ClipOval(
+                          child: Image.network(
+                            user.photoUrl!,
+                            width: 60.w,
+                            height: 60.h,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => avatar,
+                            loadingBuilder: (_, child, progress) {
+                              return progress == null ? child : avatar;
+                            },
                           ),
                         ),
-                      ),
-                  ],
                 );
               },
             ),
-          ),
-          SizedBox(width: 15.w),
-          BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) {
-              final user = switch (state) {
-                AuthSuccess(user: final user) => user,
-                AuthLoginSuccess(user: final user) => user,
-                _ => const User.guest(),
-              };
+          ],
+        ),
 
-              return CircleAvatar(
-                radius: 18.r,
-                backgroundColor: colors.primary,
-                child:
-                    user.isGuest ||
-                        user.photoUrl == null ||
-                        user.photoUrl!.isEmpty
-                    ? avatar
-                    : ClipOval(
-                        child: Image.network(
-                          user.photoUrl!,
-                          width: 60.w,
-                          height: 60.h,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => avatar,
-                          loadingBuilder: (_, child, progress) {
-                            return progress == null ? child : avatar;
-                          },
-                        ),
-                      ),
-              );
-            },
-          ),
-        ],
+        body: IndexedStack(index: _currentIndex, children: _screens),
+
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          destinations: [
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: const Icon(Icons.home_rounded),
+              label: 'nav.home'.tr(),
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.explore_outlined),
+              selectedIcon: const Icon(Icons.explore_rounded),
+              label: 'nav.discover'.tr(),
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.video_library_outlined),
+              selectedIcon: const Icon(Icons.video_library_rounded),
+              label: 'nav.library'.tr(),
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.person_outline_rounded),
+              selectedIcon: const Icon(Icons.person_rounded),
+              label: 'nav.profile'.tr(),
+            ),
+          ],
+        ),
       ),
-
-      body: IndexedStack(index: _currentIndex, children: _screens),
-
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home_rounded),
-            label: 'nav.home'.tr(),
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.explore_outlined),
-            selectedIcon: const Icon(Icons.explore_rounded),
-            label: 'nav.discover'.tr(),
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.video_library_outlined),
-            selectedIcon: const Icon(Icons.video_library_rounded),
-            label: 'nav.library'.tr(),
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.person_outline_rounded),
-            selectedIcon: const Icon(Icons.person_rounded),
-            label: 'nav.profile'.tr(),
-          ),
-        ],
-      ),
-    ),
-  );
+    );
   }
 }
 

@@ -85,18 +85,18 @@ class SearchEmptyState extends StatelessWidget {
                 onPressed: onAction,
                 icon: Icon(
                   Icons.refresh_rounded,
-                  size: 12.sp,
+                  size: 18.sp,
                   color: primaryColor,
                 ),
                 label: Text(
                   action!,
-                  style: TextStyle(color: primaryColor, fontSize: 9.sp),
+                  style: TextStyle(color: primaryColor, fontSize: 13.sp),
                 ),
                 style: TextButton.styleFrom(
                   backgroundColor: fieldColor,
                   padding: EdgeInsets.symmetric(
-                    horizontal: 13.w,
-                    vertical: 6.h,
+                    horizontal: 30.w,
+                    vertical: 15.h,
                   ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,

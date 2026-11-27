@@ -1,3 +1,5 @@
+import 'package:movie_discovery_app/features/home/home_tab/domain/entities/movie.dart';
+
 enum SearchItemType { movie, tv, person }
 
 class SearchItem {
@@ -30,4 +32,18 @@ class SearchItem {
   int? get year => releaseDate.length >= 4
       ? int.tryParse(releaseDate.substring(0, 4))
       : null;
+
+  Movie toMovie() {
+    return Movie(
+      id: id,
+      title: title,
+      overview: description,
+      posterPath: imagePath,
+      backdropPath: null,
+      voteAverage: rating,
+      releaseDate: releaseDate,
+      genreIds: genreIds,
+      mediaType: type == SearchItemType.tv ? 'tv' : 'movie',
+    );
+  }
 }

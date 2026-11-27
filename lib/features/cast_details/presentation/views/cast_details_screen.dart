@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/core/widgets/app_custom_app_bar.dart';
 import 'package:movie_discovery_app/features/cast_details/domain/entities/cast_details.dart';
 import 'package:movie_discovery_app/features/cast_details/presentation/view_models/cast_details_cubit.dart';
 import 'package:movie_discovery_app/features/cast_details/presentation/view_models/cast_details_state.dart';
@@ -45,150 +45,62 @@ class _CastDetailsBodyState extends State<_CastDetailsBody> {
 
   @override
   Widget build(BuildContext context) {
-    const isDark = true;
-    final baseTheme = Theme.of(context);
-    final darkTheme = baseTheme.copyWith(
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: AppColors.bgDarkColor,
-      textTheme: baseTheme.textTheme.apply(
-        fontFamily: 'Inter',
-        fontFamilyFallback: const ['NotoSansArabic'],
-      ),
-    );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF0F131D) : const Color(0xFFF8FAFC);
+    final textColor = isDark
+        ? AppColors.textDarkColor
+        : AppColors.textLightColor;
 
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Theme(
-        data: darkTheme,
-        child: Scaffold(
-          backgroundColor: AppColors.bgDarkColor,
-          body: SafeArea(
-            child: Column(
-              children: [
-                _header(
-                  context,
-                  AppColors.textDarkColor,
-                  AppColors.dividerDarkColor,
-                ),
-                Expanded(
-                  child: BlocBuilder<CastDetailsCubit, CastDetailsState>(
-                    builder: (context, state) {
-                      if (state.isLoading && state.details == null) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.primaryColor,
-                          ),
-                        );
-                      }
-                      if (state.errorMessage != null && state.details == null) {
-                        return _errorState(
-                          context,
-                          state.errorMessage!,
-                          isDark,
-                        );
-                      }
-                      final details = state.details;
-                      if (details == null) return const SizedBox.shrink();
-                      return Column(
-                        children: [
-                          _profile(details, isDark, AppColors.textDarkColor),
-                          _tabs(isDark),
-                          Expanded(
-                            child: RefreshIndicator(
-                              color: AppColors.primaryColor,
-                              onRefresh: context
-                                  .read<CastDetailsCubit>()
-                                  .loadDetails,
-                              child: SingleChildScrollView(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                  18.w,
-                                  17.h,
-                                  18.w,
-                                  24.h,
-                                ),
-                                child: _tabContent(
-                                  details,
-                                  isDark,
-                                  AppColors.textDarkColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: AppCustomAppBar(
+        title: _t('Cast Details', 'تفاصيل الممثل'),
+        icon: Icons.person,
+        bgColor: bgColor,
+        textColor: textColor,
+      ),
+      body: BlocBuilder<CastDetailsCubit, CastDetailsState>(
+        builder: (context, state) {
+          if (state.isLoading && state.details == null) {
+            return Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
+            );
+          }
+          if (state.errorMessage != null && state.details == null) {
+            return _errorState(context, state.errorMessage!, isDark);
+          }
+          final details = state.details;
+          if (details == null) return const SizedBox.shrink();
+          return Column(
+            children: [
+              _profile(details, isDark, AppColors.textDarkColor),
+              _tabs(isDark),
+              Expanded(
+                child: RefreshIndicator(
+                  color: AppColors.primaryColor,
+                  onRefresh: context.read<CastDetailsCubit>().loadDetails,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsetsDirectional.fromSTEB(
+                      18.w,
+                      17.h,
+                      18.w,
+                      24.h,
+                    ),
+                    child: _tabContent(
+                      details,
+                      isDark,
+                      AppColors.textDarkColor,
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
-
-  Widget _header(
-    BuildContext context,
-    Color textColor,
-    Color dividerColor,
-  ) => Container(
-    height: 62.h,
-    padding: EdgeInsets.symmetric(horizontal: 12.w),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: dividerColor)),
-    ),
-    child: Row(
-      children: [
-        IconButton(
-          onPressed: () => Navigator.maybePop(context),
-          padding: EdgeInsets.zero,
-          constraints: BoxConstraints.tightFor(width: 36.w, height: 42.h),
-          icon: Icon(
-            widget.isArabic
-                ? Icons.arrow_forward_rounded
-                : Icons.arrow_back_rounded,
-            color: textColor,
-            size: 22.sp,
-          ),
-        ),
-        SizedBox(width: 7.w),
-        Expanded(
-          child: Text(
-            _t('Cast Details', 'تفاصيل الممثل'),
-            style: TextStyle(
-              color: textColor,
-              fontSize: 16.sp,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        IconButton(
-          onPressed: () async {
-            await Clipboard.setData(
-              ClipboardData(
-                text: 'https://www.themoviedb.org/person/${widget.personId}',
-              ),
-            );
-            if (!context.mounted) return;
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(_t('Profile link copied', 'تم نسخ رابط الممثل')),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          },
-          icon: Icon(Icons.share_outlined, color: textColor, size: 20.sp),
-          tooltip: _t('Share', 'مشاركة'),
-        ),
-        CircleAvatar(
-          radius: 18.r,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Icon(Icons.person_outline, color: Colors.white, size: 25.sp),
-        ),
-      ],
-    ),
-  );
 
   Widget _profile(CastDetails details, bool isDark, Color textColor) {
     final secondaryColor = isDark
@@ -588,11 +500,14 @@ class _CastDetailsBodyState extends State<_CastDetailsBody> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color:
-            isDark ? AppColors.cardSurfaceDarkColor : AppColors.cardLightColor,
+        color: isDark
+            ? AppColors.cardSurfaceDarkColor
+            : AppColors.cardLightColor,
         borderRadius: BorderRadius.circular(14.r),
         border: Border.all(
-          color: isDark ? AppColors.borderDarkColor : AppColors.borderLightColor,
+          color: isDark
+              ? AppColors.borderDarkColor
+              : AppColors.borderLightColor,
           width: 1.r,
         ),
       ),

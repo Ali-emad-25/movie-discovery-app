@@ -10,11 +10,7 @@ class TopRatedCard extends StatefulWidget {
   final Movie movie;
   final VoidCallback? onTap;
 
-  const TopRatedCard({
-    super.key,
-    required this.movie,
-    this.onTap,
-  });
+  const TopRatedCard({super.key, required this.movie, this.onTap});
 
   @override
   State<TopRatedCard> createState() => _TopRatedCardState();
@@ -42,10 +38,15 @@ class _TopRatedCardState extends State<TopRatedCard> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF171B26) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF262A35) : const Color(0xFFE2E8F0);
-    final textColor = isDark ? AppColors.textDarkColor : AppColors.textLightColor;
-    final secondaryTextColor =
-        isDark ? AppColors.secondaryTextDarkColor : AppColors.secondaryTextLightColor;
+    final borderColor = isDark
+        ? const Color(0xFF262A35)
+        : const Color(0xFFE2E8F0);
+    final textColor = isDark
+        ? AppColors.textDarkColor
+        : AppColors.textLightColor;
+    final secondaryTextColor = isDark
+        ? AppColors.secondaryTextDarkColor
+        : AppColors.secondaryTextLightColor;
     final lang = context.locale.languageCode;
     final genre = GenreHelper.getGenreNames(
       widget.movie.genreIds,
@@ -74,14 +75,17 @@ class _TopRatedCardState extends State<TopRatedCard> {
           children: [
             // Poster
             Container(
-              width: 70.w,
-              height: 100.h,
+              width: 80.w,
+              height: 115.h,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14.r),
-                color: isDark ? const Color(0xFF1F2432) : const Color(0xFFE2E8F0),
+                color: isDark
+                    ? const Color(0xFF1F2432)
+                    : const Color(0xFFE2E8F0),
               ),
               clipBehavior: Clip.antiAlias,
-              child: widget.movie.posterPath != null &&
+              child:
+                  widget.movie.posterPath != null &&
                       widget.movie.posterPath!.isNotEmpty
                   ? Image.network(
                       widget.movie.posterUrl,
@@ -100,27 +104,15 @@ class _TopRatedCardState extends State<TopRatedCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Title + More options
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          widget.movie.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w700,
-                            color: textColor,
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        Icons.more_vert_rounded,
-                        size: 18.sp,
-                        color: secondaryTextColor,
-                      ),
-                    ],
+                  Text(
+                    widget.movie.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700,
+                      color: textColor,
+                    ),
                   ),
 
                   SizedBox(height: 4.h),
@@ -165,7 +157,7 @@ class _TopRatedCardState extends State<TopRatedCard> {
                     ],
                   ),
 
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 5.h),
 
                   // Badge + Heart
                   Row(
@@ -199,8 +191,9 @@ class _TopRatedCardState extends State<TopRatedCard> {
                       GestureDetector(
                         onTap: _toggleFavorite,
                         child: Container(
-                          width: 32.r,
-                          height: 32.r,
+                          margin: EdgeInsets.only(right: 5, bottom: 5),
+                          width: 40.r,
+                          height: 40.r,
                           decoration: BoxDecoration(
                             color: isDark
                                 ? const Color(0xFF262A35)
@@ -211,7 +204,7 @@ class _TopRatedCardState extends State<TopRatedCard> {
                             _isFavorite
                                 ? Icons.favorite_rounded
                                 : Icons.favorite_border_rounded,
-                            size: 16.sp,
+                            size: 20.sp,
                             color: _isFavorite
                                 ? const Color(0xFFFF383C)
                                 : secondaryTextColor,
@@ -239,4 +232,3 @@ class _TopRatedCardState extends State<TopRatedCard> {
     );
   }
 }
-

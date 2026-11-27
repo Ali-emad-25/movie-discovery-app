@@ -17,7 +17,10 @@ import 'package:movie_discovery_app/features/auth/presentation/views/login_scree
 import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
 import 'package:movie_discovery_app/features/home/home_screen.dart';
 import 'package:movie_discovery_app/features/movie_details/presentation/views/movie_details_screen.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/views/notifications_screen.dart';
 import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
+import 'package:movie_discovery_app/features/search/presentation/views/search_screen.dart';
 import 'package:movie_discovery_app/features/splash/presentation/views/splash_screen.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/firebase_options.dart';
@@ -151,6 +154,7 @@ class _MyAppState extends State<MyApp> {
                     final user = args is User ? args : const User.guest();
                     return AccountSettingsScreen(user: user);
                   },
+                  AppRoutes.searchRouteName: (context) => const SearchScreen(),
 
                   AppRoutes.movieDetailsRouteName: (context) {
                     final args = ModalRoute.of(context)?.settings.arguments;

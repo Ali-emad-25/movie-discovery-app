@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_discovery_app/core/di/injection.dart';
 import 'package:movie_discovery_app/core/utils/app_colors.dart';
+import 'package:movie_discovery_app/core/widgets/app_custom_app_bar.dart';
+import 'package:movie_discovery_app/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:movie_discovery_app/features/cast_details/presentation/views/cast_details_screen.dart';
 import 'package:movie_discovery_app/features/search/domain/entities/search_item.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_cubit.dart';
 import 'package:movie_discovery_app/features/search/presentation/view_models/search_state.dart';
 import 'package:movie_discovery_app/features/search/presentation/widgets/search_empty_state.dart';
-import 'package:movie_discovery_app/features/search/presentation/widgets/search_field.dart';
 import 'package:movie_discovery_app/features/search/presentation/widgets/search_filters_sheet.dart';
-import 'package:movie_discovery_app/features/search/presentation/widgets/search_header.dart';
 import 'package:movie_discovery_app/features/search/presentation/widgets/search_results_view.dart';
 import 'package:movie_discovery_app/features/search/presentation/widgets/search_suggestions.dart';
 
@@ -87,18 +88,64 @@ class _SearchScreenBodyState extends State<_SearchScreenBody> {
     final primaryColor = isDark
         ? AppColors.primaryTextDarkColor
         : AppColors.primaryColor;
+    final textColor = isDark
+        ? AppColors.textDarkColor
+        : AppColors.textLightColor;
 
     return Scaffold(
       backgroundColor: bgColor,
+      appBar: AppCustomAppBar(
+        title: _t('Search', 'بحث'),
+        icon: Icons.search_rounded,
+        bgColor: bgColor,
+        textColor: textColor,
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            SearchHeader(isArabic: _isArabic),
-            SearchField(
-              controller: _controller,
-              isArabic: _isArabic,
-              onOpenFilters: _openFilters,
-              onClear: _clearQuery,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AuthTextField(
+                      controller: _controller,
+                      hint: _t('Search', 'ابحث'),
+                      prefixIcon: Icons.search,
+                      textInputAction: TextInputAction.search,
+                      onChanged: context.read<SearchCubit>().updateQuery,
+                      onFieldSubmitted: (_) {
+                        context.read<SearchCubit>().search();
+                      },
+                      suffixIcon: BlocBuilder<SearchCubit, SearchState>(
+                        builder: (context, state) {
+                          if (!state.hasQuery) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return IconButton(
+                            onPressed: _clearQuery,
+                            icon: const Icon(Icons.close),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  IconButton(
+                    padding: EdgeInsets.all(12),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Theme.of(context).cardColor,
+                      side: BorderSide(
+                        width: 1,
+                        color: Theme.of(context).dividerColor,
+                      ),
+                    ),
+                    onPressed: _openFilters,
+                    icon: const Icon(Icons.tune_rounded),
+                  ),
+                ],
+              ),
             ),
             Expanded(
               child: BlocBuilder<SearchCubit, SearchState>(
@@ -109,6 +156,9 @@ class _SearchScreenBodyState extends State<_SearchScreenBody> {
                       isArabic: _isArabic,
                       onSelectQuery: _selectQuery,
                     );
+                  }
+                  if (state.isDebouncing) {
+                    return const SizedBox.shrink();
                   }
                   if (state.isLoading && state.results.isEmpty) {
                     return Center(
