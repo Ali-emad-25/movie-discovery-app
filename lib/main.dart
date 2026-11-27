@@ -9,6 +9,9 @@ import 'package:movie_discovery_app/core/services/notification_service.dart';
 import 'package:movie_discovery_app/core/utils/app_theme.dart';
 import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:movie_discovery_app/features/account_settings/presentation/views/account_settings_screen.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
+import 'package:movie_discovery_app/features/notifications/presentation/views/notifications_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/forgot_password_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/login_screen.dart';
 import 'package:movie_discovery_app/features/auth/presentation/views/register_screen.dart';
@@ -19,6 +22,7 @@ import 'package:movie_discovery_app/features/notifications/presentation/views/no
 import 'package:movie_discovery_app/features/profile/presentation/views/profile_tab.dart';
 import 'package:movie_discovery_app/features/search/presentation/views/search_screen.dart';
 import 'package:movie_discovery_app/features/splash/presentation/views/splash_screen.dart';
+import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/firebase_options.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -145,6 +149,11 @@ class _MyAppState extends State<MyApp> {
                   AppRoutes.notificationsRouteName: (context) =>
                       const NotificationsScreen(),
 
+                  AppRoutes.accountSettingsRouteName: (context) {
+                    final args = ModalRoute.of(context)?.settings.arguments;
+                    final user = args is User ? args : const User.guest();
+                    return AccountSettingsScreen(user: user);
+                  },
                   AppRoutes.searchRouteName: (context) => const SearchScreen(),
 
                   AppRoutes.movieDetailsRouteName: (context) {

@@ -97,6 +97,38 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<ApiResult<void>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await remoteDataSource.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+      return const ApiSuccess(null);
+    } on fb.FirebaseAuthException catch (e) {
+      return ApiError(FirebaseAuthErrorHandler.handle(e));
+    } catch (_) {
+      return const ApiError(UnknownFailure());
+    }
+  }
+
+  @override
+  Future<ApiResult<void>> deleteAccount({
+    required String currentPassword,
+  }) async {
+    try {
+      await remoteDataSource.deleteAccount(currentPassword: currentPassword);
+      return const ApiSuccess(null);
+    } on fb.FirebaseAuthException catch (e) {
+      return ApiError(FirebaseAuthErrorHandler.handle(e));
+    } catch (_) {
+      return const ApiError(UnknownFailure());
+    }
+  }
+
+  @override
   Future<ApiResult<User?>> getCurrentUser() async {
     try {
       final user = await remoteDataSource.getCurrentUser();

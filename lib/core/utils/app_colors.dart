@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -43,6 +42,12 @@ class AppColors {
   // Error Colors
   static const errorLightColor = Color(0xFFBE123C);
   static const errorDarkColor = Color(0xFFFB7185);
+  static const dangerColor = Color(0xFFE8354B);
+  static const dangerSurfaceDarkColor = Color(0xFF21131A);
+  static const dangerBorderDarkColor = Color(0xFF3A1D25);
+
+  // Sheet Colors
+  static const sheetHandleDarkColor = Color(0xFF353945);
 
   // Divider Colors
   static const dividerLightColor = Color(0xFFE2E8F0);

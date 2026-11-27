@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:movie_discovery_app/core/errors/failures.dart';
 
@@ -34,6 +33,11 @@ class FirebaseAuthErrorHandler {
 
       case 'too-many-requests':
         return const AuthErrorFailure('auth.too_many_requests');
+
+      case 'password-sign-in-required':
+        return const AuthErrorFailure(
+          'account_settings.password_provider_required',
+        );
 
       default:
         return const AuthErrorFailure('auth.login_error');
