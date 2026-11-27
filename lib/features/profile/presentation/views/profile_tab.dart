@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +10,7 @@ import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/core/widgets/app_dialog.dart';
 import 'package:movie_discovery_app/core/widgets/app_toast.dart';
 import 'package:movie_discovery_app/core/widgets/coming_soon.dart';
+import 'package:movie_discovery_app/features/account_settings/presentation/views/account_settings_screen.dart';
 import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_cubit.dart';
 import 'package:movie_discovery_app/features/notifications/presentation/view_models/notifications_state.dart';
@@ -77,6 +80,17 @@ class _ProfileView extends StatelessWidget {
     action();
   }
 
+  Future<void> _openAccountSettings(BuildContext context, User user) async {
+    final profileUpdated = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => AccountSettingsScreen(user: user),
+      ),
+    );
+    if (profileUpdated == true && context.mounted) {
+      await context.read<ProfileCubit>().loadProfile();
+    }
+  }
+
   Widget _userCard(BuildContext context, User user) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -118,16 +132,26 @@ class _ProfileView extends StatelessWidget {
                 user.isGuest || user.photoUrl == null || user.photoUrl!.isEmpty
                 ? avatar
                 : ClipOval(
-                    child: Image.network(
-                      user.photoUrl!,
-                      width: 60.w,
-                      height: 60.h,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => avatar,
-                      loadingBuilder: (_, child, progress) {
-                        return progress == null ? child : avatar;
-                      },
-                    ),
+                    child:
+                        user.photoUrl!.startsWith('http://') ||
+                            user.photoUrl!.startsWith('https://')
+                        ? Image.network(
+                            user.photoUrl!,
+                            width: 60.w,
+                            height: 60.h,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => avatar,
+                            loadingBuilder: (_, child, progress) {
+                              return progress == null ? child : avatar;
+                            },
+                          )
+                        : Image.file(
+                            File(user.photoUrl!),
+                            width: 60.w,
+                            height: 60.h,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => avatar,
+                          ),
                   ),
           ),
 
@@ -260,11 +284,7 @@ class _ProfileView extends StatelessWidget {
                 context,
                 Icons.manage_accounts_outlined,
                 'profile.account',
-                onTap: () => _requireAccount(
-                  context,
-                  user,
-                  () => showComingSoon(context),
-                ),
+                onTap: () => _openAccountSettings(context, user),
               ),
 
               Divider(

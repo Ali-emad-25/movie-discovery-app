@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:get_it/get_it.dart';
 import 'package:movie_discovery_app/core/database/database_helper.dart';
 import 'package:movie_discovery_app/core/network/api_manager.dart';
@@ -6,9 +6,15 @@ import 'package:movie_discovery_app/core/services/notification_service.dart';
 import 'package:movie_discovery_app/core/utils/settings_cubit.dart';
 import 'package:movie_discovery_app/core/utils/settings_repository_impl.dart';
 import 'package:movie_discovery_app/core/utils/settings_use_cases.dart';
+import 'package:movie_discovery_app/features/account_settings/domain/use_cases/account_settings_use_cases.dart';
+import 'package:movie_discovery_app/features/account_settings/presentation/view_models/account_settings_cubit.dart';
+import 'package:movie_discovery_app/features/account_settings/data/data_sources/account_settings_local_data_source.dart';
+import 'package:movie_discovery_app/features/account_settings/data/repositories/account_settings_repository_impl.dart';
+import 'package:movie_discovery_app/features/account_settings/domain/repositories/account_settings_repository.dart';
 import 'package:movie_discovery_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:movie_discovery_app/features/auth/data/data_sources/auth_remote_data_source_impl.dart';
 import 'package:movie_discovery_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:movie_discovery_app/features/auth/domain/entities/user.dart';
 import 'package:movie_discovery_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/continue_as_guest_use_case.dart';
 import 'package:movie_discovery_app/features/auth/domain/use_cases/get_current_user_use_case.dart';
@@ -104,6 +110,14 @@ Future<void> configureDependencies() async {
     () => LogoutUseCase(getIt<AuthRepository>()),
   );
 
+  // Account Settings Use Cases
+  getIt.registerLazySingleton<ChangeAccountPasswordUseCase>(
+    () => ChangeAccountPasswordUseCase(getIt<AuthRepository>()),
+  );
+  getIt.registerLazySingleton<DeleteAccountUseCase>(
+    () => DeleteAccountUseCase(getIt<AuthRepository>()),
+  );
+
   // Auth Cubits
   getIt.registerFactory<AuthCubit>(
     () => AuthCubit(
@@ -162,32 +176,31 @@ Future<void> configureDependencies() async {
 
   // Discover Feature
   getIt.registerLazySingleton<DiscoverRemoteDataSource>(
-        () => DiscoverRemoteDataSourceImpl(getIt<ApiManager>()),
+    () => DiscoverRemoteDataSourceImpl(getIt<ApiManager>()),
   );
 
   getIt.registerLazySingleton<DiscoverRepository>(
-        () => DiscoverRepositoryImpl(getIt<DiscoverRemoteDataSource>()),
+    () => DiscoverRepositoryImpl(getIt<DiscoverRemoteDataSource>()),
   );
 
   getIt.registerLazySingleton<GetDiscoverMovies>(
-        () => GetDiscoverMovies(getIt<DiscoverRepository>()),
+    () => GetDiscoverMovies(getIt<DiscoverRepository>()),
   );
 
   getIt.registerLazySingleton<GetDiscoverTvShows>(
-        () => GetDiscoverTvShows(getIt<DiscoverRepository>()),
+    () => GetDiscoverTvShows(getIt<DiscoverRepository>()),
   );
 
   getIt.registerLazySingleton<GetDiscoverPeople>(
-        () => GetDiscoverPeople(getIt<DiscoverRepository>()),
+    () => GetDiscoverPeople(getIt<DiscoverRepository>()),
   );
 
   getIt.registerFactory<DiscoverCubit>(
-        () =>
-        DiscoverCubit(
-          getDiscoverMovies: getIt<GetDiscoverMovies>(),
-          getDiscoverTvShows: getIt<GetDiscoverTvShows>(),
-          getDiscoverPeople: getIt<GetDiscoverPeople>(),
-        ),
+    () => DiscoverCubit(
+      getDiscoverMovies: getIt<GetDiscoverMovies>(),
+      getDiscoverTvShows: getIt<GetDiscoverTvShows>(),
+      getDiscoverPeople: getIt<GetDiscoverPeople>(),
+    ),
   );
 
   // Search Feature
@@ -243,7 +256,20 @@ Future<void> configureDependencies() async {
   getIt.registerFactory<ProfileCubit>(
     () => ProfileCubit(
       getProfileUseCase: getIt<GetProfileUseCase>(),
+      getLocalAccountProfileUseCase: getIt<GetLocalAccountProfileUseCase>(),
       logoutUseCase: getIt<LogoutUseCase>(),
+    ),
+  );
+
+  getIt.registerFactoryParam<AccountSettingsCubit, User, dynamic>(
+    (user, _) => AccountSettingsCubit(
+      user: user,
+      getLocalAccountProfileUseCase: getIt<GetLocalAccountProfileUseCase>(),
+      saveLocalAccountProfileUseCase: getIt<SaveLocalAccountProfileUseCase>(),
+      deleteLocalAccountProfileUseCase:
+          getIt<DeleteLocalAccountProfileUseCase>(),
+      changePasswordUseCase: getIt<ChangeAccountPasswordUseCase>(),
+      deleteAccountUseCase: getIt<DeleteAccountUseCase>(),
     ),
   );
 
@@ -271,6 +297,22 @@ Future<void> configureDependencies() async {
 
   // Local Database & Notifications Service
   getIt.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
+  getIt.registerLazySingleton<AccountSettingsLocalDataSource>(
+    () => AccountSettingsLocalDataSourceImpl(getIt<DatabaseHelper>()),
+  );
+  getIt.registerLazySingleton<AccountSettingsRepository>(
+    () =>
+        AccountSettingsRepositoryImpl(getIt<AccountSettingsLocalDataSource>()),
+  );
+  getIt.registerLazySingleton<GetLocalAccountProfileUseCase>(
+    () => GetLocalAccountProfileUseCase(getIt<AccountSettingsRepository>()),
+  );
+  getIt.registerLazySingleton<SaveLocalAccountProfileUseCase>(
+    () => SaveLocalAccountProfileUseCase(getIt<AccountSettingsRepository>()),
+  );
+  getIt.registerLazySingleton<DeleteLocalAccountProfileUseCase>(
+    () => DeleteLocalAccountProfileUseCase(getIt<AccountSettingsRepository>()),
+  );
   getIt.registerLazySingleton<NotificationService>(() => NotificationService());
 
   // Notifications Feature

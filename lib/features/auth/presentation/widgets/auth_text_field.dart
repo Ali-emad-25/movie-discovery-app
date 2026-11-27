@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -10,6 +9,13 @@ class AuthTextField extends StatefulWidget {
   final bool isPassword;
   final String? Function(String?)? validator;
   final bool enabled;
+  final bool autofocus;
+  final bool readOnly;
+  final TextCapitalization textCapitalization;
+  final TextInputAction? textInputAction;
+  final bool? passwordObscured;
+  final VoidCallback? onTogglePasswordVisibility;
+  final TextStyle? textStyle;
 
   const AuthTextField({
     super.key,
@@ -20,6 +26,13 @@ class AuthTextField extends StatefulWidget {
     this.isPassword = false,
     this.validator,
     this.enabled = true,
+    this.autofocus = false,
+    this.readOnly = false,
+    this.textCapitalization = TextCapitalization.none,
+    this.textInputAction,
+    this.passwordObscured,
+    this.onTogglePasswordVisibility,
+    this.textStyle,
   });
 
   @override
@@ -33,39 +46,44 @@ class _AuthTextFieldState extends State<AuthTextField> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final passwordObscured = widget.passwordObscured ?? obscureText;
 
-    return TextFormField(
-      controller: widget.controller,
-      keyboardType: widget.keyboardType,
-      obscureText: widget.isPassword && obscureText,
-      validator: widget.validator,
-      enabled: widget.enabled,
-      style: theme.textTheme.bodyMedium,
-      decoration: InputDecoration(
-        hintText: widget.hint,
-
-        prefixIcon: Icon(
-          widget.prefixIcon,
-          size: 18.sp,
-          color: colors.onSurface.withValues(alpha: 0.65),
-        ),
-
-        suffixIcon: widget.isPassword
-            ? IconButton(
-          onPressed: () {
-            setState(() {
-              obscureText = !obscureText;
-            });
-          },
-          icon: Icon(
-            obscureText
-                ? Icons.visibility_outlined
-                : Icons.visibility_off_outlined,
-            size: 17.sp,
+    return IgnorePointer(
+      ignoring: widget.readOnly,
+      child: TextFormField(
+        controller: widget.controller,
+        keyboardType: widget.keyboardType,
+        textCapitalization: widget.textCapitalization,
+        textInputAction: widget.textInputAction,
+        autofocus: widget.autofocus,
+        readOnly: widget.readOnly,
+        showCursor: !widget.readOnly,
+        obscureText: widget.isPassword && passwordObscured,
+        validator: widget.validator,
+        enabled: widget.enabled,
+        style: widget.textStyle ?? theme.textTheme.bodyMedium,
+        decoration: InputDecoration(
+          hintText: widget.hint,
+          prefixIcon: Icon(
+            widget.prefixIcon,
+            size: 18.sp,
             color: colors.onSurface.withValues(alpha: 0.65),
           ),
-        )
-            : null,
+          suffixIcon: widget.isPassword
+              ? IconButton(
+                  onPressed:
+                      widget.onTogglePasswordVisibility ??
+                      () => setState(() => obscureText = !obscureText),
+                  icon: Icon(
+                    passwordObscured
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    size: 17.sp,
+                    color: colors.onSurface.withValues(alpha: 0.65),
+                  ),
+                )
+              : null,
+        ),
       ),
     );
   }

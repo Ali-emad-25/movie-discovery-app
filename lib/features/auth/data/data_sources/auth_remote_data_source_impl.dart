@@ -78,6 +78,41 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     await firebaseAuth.signOut();
   }
 
+  Future<User> _reauthenticateWithPassword(String password) async {
+    final user = firebaseAuth.currentUser;
+    if (user == null || user.email == null) {
+      throw FirebaseAuthException(code: 'user-not-found');
+    }
+
+    final supportsPassword = user.providerData.any(
+      (provider) => provider.providerId == EmailAuthProvider.PROVIDER_ID,
+    );
+    if (!supportsPassword) {
+      throw FirebaseAuthException(code: 'password-sign-in-required');
+    }
+
+    await user.reauthenticateWithCredential(
+      EmailAuthProvider.credential(email: user.email!, password: password),
+    );
+    return user;
+  }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final user = await _reauthenticateWithPassword(currentPassword);
+    await user.updatePassword(newPassword);
+  }
+
+  @override
+  Future<void> deleteAccount({required String currentPassword}) async {
+    final user = await _reauthenticateWithPassword(currentPassword);
+    await user.delete();
+    await firebaseAuth.signOut();
+  }
+
   @override
   Future<UserCredential> continueAsGuest() {
     return firebaseAuth.signInAnonymously();

@@ -7,9 +7,7 @@ abstract class AuthRemoteDataSource {
     required String password,
   });
 
-  Future<void> sendPasswordResetEmail({
-    required String email,
-  });
+  Future<void> sendPasswordResetEmail({required String email});
 
   Future<UserCredential> login({
     required String email,
@@ -19,6 +17,13 @@ abstract class AuthRemoteDataSource {
   Future<User?> getCurrentUser();
 
   Future<void> logout();
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
+
+  Future<void> deleteAccount({required String currentPassword});
 
   Future<UserCredential> continueAsGuest();
 
